@@ -1,0 +1,7 @@
+<?php
+$version['number'] = '2.0 beta';
+$version['patch'] = '1001';
+$version['name'] = 'RMS Central [BLL Edition]';
+$version['timezone'] = 'Asia/Bangkok';
+$version['api'] = '1.02';
+?>

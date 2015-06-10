@@ -1,0 +1,53 @@
+<?php
+ini_set('display_errors', '0');
+error_reporting(0);
+
+//Database settings
+include_once 'version.rms';
+$timezone = "Asia/Bangkok";
+date_default_timezone_set($timezone);
+
+//Database config.
+$conf['host']="localhost";
+$conf['dbuser']="root";
+$conf['dbpass']="v4boyomN";
+$conf['dbname']="rms_auth_db";
+$conf['table_prefix']='tc';
+
+$conf['port'] = $_SERVER["SERVER_PORT"];
+if($conf['port']==80)
+$conf['protocol'] = 'http://';
+if($conf['port']==443)
+$conf['protocol'] = 'https://';
+
+//Web settings
+$conf['pagename'] = "Boundless Learning";
+$conf['domain']= $_SERVER['HTTP_HOST'];
+
+$conf['profile_img_size'] = 1024000;
+$conf['auth_key'] = 'JEKV6rPS9fU2xgvPzR9N5HPAZ2gos5w86a0aegeINIgy';
+$conf['system_email'] = 'admin@bll.in.th';
+
+//$plain_text="12345678";
+$conf['amkey'] ="+e9SdYd6Uj750+LrKvlP6mdh";
+$conf['amvi']  = "SMx0Su06";
+
+//System path settings
+$conf['dir'] = $_SERVER['DOCUMENT_ROOT'].'/'; //linux file path
+$conf['path']="/"; //Path to this program example "/" single slash mean root folder
+$conf['user_path'] = $conf['dir'].'user/';
+$conf['core']="core/";
+$conf['upload_dir']='data/';
+$conf['contents'] = 'data/content/';
+$conf['url']=$conf['protocol'].$conf['domain'].$conf['path'];
+$conf['library']='library/';
+$conf['user'] = $conf['url'].'user/';
+$conf['version'] = $version['number'];
+$conf['idm_apiversion'] =  $version['api'];
+$conf['root'] = $_SERVER['DOCUMENT_ROOT'];
+$conf['idm_server'] = 'http://acumanager.bll.in.th/';
+$conf['idm-server'] = '106.0.176.33';
+$conf['api_server'] = 'http://rms.bll.in.th:8000/';
+$conf['orgid'] = '1000000001';
+$conf['orgname'] = 'โรงเรียนไร้พรมแดน';
+?>

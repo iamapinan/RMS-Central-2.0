@@ -1,0 +1,48 @@
+#
+# Apache/PHP/Apinan settings:
+#
+# Set some options.
+
+Options +FollowSymLinks
+Order allow,deny
+Allow from all
+DirectoryIndex index.php
+
+#Rewrite mode
+<IfModule mod_rewrite.c>
+RewriteEngine on
+
+RewriteCond %{SERVER_PORT} !^443
+RewriteRule (.*) https://rms.local.io [R]
+
+RewriteRule ^go/([a-zA-Z0-9_-]+)$ index.php?go=$1 [QSA,L]
+RewriteRule ^image$ image-api.php [QSA,L]
+RewriteRule ^me$ user.php [QSA,L]
+RewriteRule ^oauth$ api.php [QSA,L]
+RewriteRule ^token$ token.php [QSA,L]
+RewriteRule ^access$ access.php [QSA,L]
+RewriteRule ^@(.*)$ profile.php?indentity=$1 [QSA,L]
+RewriteRule ^profile/(.*)$ profile.php?indentity=$1 [QSA,L]
+
+RewriteRule ^at@(.*)$ profile-dev.php?indentity=$1 [QSA,L]
+RewriteRule ^profile-dev/(.*)$ profile-dev.php?indentity=$1 [QSA,L]
+RewriteRule ^course-api/(.*)$ course_data.php?getid=$1 [QSA,L]
+RewriteRule ^([ก-ฮa-zA-Z0-9_-]+)$ page.php?p=$1 [QSA,L]
+RewriteRule ^page/([0-9]+)$ page.php?rq=$1  [QSA,L]
+RewriteRule ^page/([0-9]+)/$ page.php?rq=$1  [QSA,L]
+RewriteRule ^blog/([ก-ฮa-zA-Z0-9_-]+)$ view.php?view=$1  [QSA,L]
+RewriteRule ^social_auth/(.*)$ partner_api/$1.php  [QSA,L]
+RewriteRule ^group/(.*)$ page.php?p=group&gpid=$1  [QSA,L]
+RewriteRule ^social_auth/noeplaza$ partner_api/noeplaza/login/index.php  [QSA,L]
+RewriteRule ^([ก-ฮa-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)$ page.php?p=$1&$2=$3  [L] #2 variable
+RewriteRule ^([ก-ฮa-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)$ page.php?p=$1&$2=$3&$4=$5  [L] #3 variable
+RewriteRule ^page/([0-9]+)/([ก-ฮa-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)$ page.php?rq=$1&$2=$3  [L] #2 variable
+RewriteRule ^page/([0-9]+)/([ก-ฮa-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)$ page.php?rq=$1&$2=$3&$4=$5  [L] #3 variable
+RewriteRule ^u/(.*)$ profile.php?indentity=$1  [QSA,L]
+RewriteRule ^file/(.*)$ temp/$1  [QSA,L]
+
+</IfModule>
+
+#Error Documents
+ErrorDocument 403 /403
+ErrorDocument 404 /404

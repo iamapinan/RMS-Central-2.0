@@ -1,0 +1,11 @@
+
+			<!DOCTYPE html>
+			<html lang="en" class="no-js">
+			<head>
+			<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+			<link rel="stylesheet" type="text/css" href="/library/blogstyle.css" charset="utf-8"/>
+			</head>
+			<body>
+			<p></p><p>load balancing คืออะไร<br>load balancing คือ การแบ่งจากจำนวนรวมของงานที่คอมพิวเตอร์ต้องทำระหว่างคอมพิวเตอร์สองเครื่องหรือมากกว่า หรือ อาจเรียกว่าเป็นการช่วยแบ่งงานที่เข้ามาจาก User ให้กระจายไปในกลุ่มของ Server ดังนั้นจึงทำงานได้มากกว่าในเวลาเท่ากัน และโดยทั่วไปผู้ใช้ทั้งหมดได้รับบริการเร็วขึ้น load balancing สามารถใช้กับฮาร์ดแวร์ ซอฟต์แวร์ หรือการผสมทั้งคู่ นอกจากนี้ยังมีคุณสมบัติของ Fail Over คือหากมีคอมพิวเตอร์ภายในกลุ่มไม่สามารถทางานได้ เช่น Down อยู่ หรือไม่สามารถรับงานหรือuserเพิ่มได้เนื่องจาก Resource ที่ใช้ทางานไม่พอ ตัว Load Balancing ที่เป็นตัวแจก Load ให้คอมพิวเตอร์ภายในกลุ่มก็จะส่ง load ไปยังคอมพิวเตอร์เครื่องอื่นๆแทน จนกว่าคอมพิวเตอร์เครื่องนั้นจะกลับมาใช้งานได้ใหม่<br><br>การทำงานของ Load Balancer นั้นมี 3 ลักษณะด้วยกันได้แก่<br>1. Round-robin เป็นการส่ง traffic ไปยัง Server ภายในกลุ่มวนไปเรื่อยๆ<br>2. Sticky เป็นการส่ง traffic โดยยึดติดกับ Session ที่ user เคยเข้าไปใช้งาน เช่น ถ้า user เคยเข้าไปใช้ใน server ที่ 1 ภายในกลุ่ม traffic ของ user คนนั้นก็จะถูกส่งไปยัง server 1 เท่านั้น<br>3. Work load เป็นการส่ง traffic โดยดูที่ performance ของ server ภายในกลุ่มเป็นสำคัญ เช่นหาก server 1 มีงานมากกว่า server 2 ตัว load balancer ก็จะส่ง traffic ไปยัง server 2<br><br>ข้อดีของload balancing<br>1.ช่วยเพิ่มความเร็วของระบบ เช่น ทำให้การโหลดข้อมูลจากเว็บเร็วขึ้น <br>2.ป้องกันปัญหาเน็ตล้ม เพราะหาก Serverตัวหนึ่งล้ม  จะ Serverอีกตัวมาทำงานแทนทันที<br>3.รองรับการใช้งานของ User จำนวนมากได้ดี<br><br>ข้อเสียของload balancing<br>หาก Load Balancer เกิดล่มขึ้นมา User จะไม่สามารถเข้ามาใช้งานระบบได้เลย ดังนั้นจะต้องมีการทำ <a href="http://www.mindphp.com/%E0%B8%84%E0%B8%B9%E0%B9%88%E0%B8%A1%E0%B8%B7%E0%B8%AD/73-%E0%B8%84%E0%B8%B7%E0%B8%AD%E0%B8%AD%E0%B8%B0%E0%B9%84%E0%B8%A3/2048-backup-%E0%B8%84%E0%B8%B7%E0%B8%AD%E0%B8%AD%E0%B8%B0%E0%B9%84%E0%B8%A3.html">Backup </a>สำหรับ Load Balancer ด้วย ซึ่งจะทำให้สิ่นเปลื้องค่าใช้จ่ายเพิ่มขึ้นอีก</p>
+			</body>
+			</html>

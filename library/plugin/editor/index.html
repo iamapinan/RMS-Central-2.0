@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Redactor in action</title>
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="./css/live.css" />
+    <script src="./lib/jquery-1.7.min.js"></script>
+
+    <link rel="stylesheet" href="./redactor/redactor.css" />
+    <script src="./redactor/redactor.js"></script>
+
+    <script type="text/javascript">
+    $(document).ready(
+      function()
+      {
+        $('#redactor_content').redactor({ imageUpload: '/upload.php?ft=blog_img' });
+      }
+    );
+    </script>
+  </head>
+  <body>
+    <div id="page">
+      <h2>Redactor in action</h2>
+
+      <textarea id="redactor_content" name="content" style="height: 560px;"></textarea>
+
+    </div>
+  </body>
+</html>

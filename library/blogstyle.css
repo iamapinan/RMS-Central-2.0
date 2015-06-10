@@ -1,0 +1,46 @@
+body{
+			margin: 10px auto;
+			line-height: 20px;
+			font-size: 14px;
+			font-family: Helvetica,Arial,Thonburi,Tahoma,FreeSans,sans-serif;
+			}
+tr,td,table{
+				font-family: Helvetica,Arial,Thonburi,Tahoma,FreeSans,sans-serif;
+			}
+h1{
+				font-size: 36px;
+			}
+h2{
+				font-size: 30px;
+			}
+h3{
+				font-size: 24px;
+			}
+h4{
+				font-size: 18px;
+			}
+blockquote{
+				color: #555;
+				padding: 5px;
+				margin-top: 5px !important;
+				margin-bottom: 5px !important;
+			}
+pre, code{
+				font-size: 100%;
+				border-radius: 0px;
+				line-height: 1.45em;
+				padding: 1em;
+				margin: 0px;
+				white-space: pre;
+				word-wrap: break-word;
+				overflow: hidden;
+			}
+img{
+				max-width: 600px !important;
+				height: auto !important;
+				vertical-align: top;
+				border: none !important;
+				margin: 10px;
+			}
+p{margin: 0px;line-height: 21px;}
+a{color: #007EC4;text-decoration: underline;}

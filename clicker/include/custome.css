@@ -1,0 +1,17 @@
+.thumbnail {
+    width: 170px;
+    border: none;
+    float: left;
+    padding: 17px 17px 5px 17px;
+}
+.online {
+    border: 5px solid #00AD4D;
+}
+.offline {
+    border: 5px solid #FF3D34;
+}
+.thumbnail .caption {
+    padding: 0px;
+    color: #333;
+}
+.random-mark{background-color: #79DAFF;}
