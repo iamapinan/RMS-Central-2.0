@@ -1,0 +1,17 @@
+#
+# Apache/PHP/Apinan settings:
+#
+# Set some options.
+
+Options +FollowSymLinks
+Order allow,deny
+Allow from all
+DirectoryIndex index.php
+
+#Rewrite mode
+<IfModule mod_rewrite.c>
+RewriteEngine on
+RewriteBase /clicker/
+
+RewriteRule ^session$ index.php [L]
+</IfModule>

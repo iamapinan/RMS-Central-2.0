@@ -43,8 +43,10 @@ class CourseProc {
 	public function CreateCourseData(){
 		global $config;
 
-		if(!is_dir($this->coursedir))
+		if(!is_dir($this->coursedir)){
 			mkdir($this->coursedir);
+			mkdir($this->coursedir.'/files');
+		}
 		
 		if(!is_file($this->meta)){
 			file_put_contents($this->meta, json_encode($this->cdp));

@@ -28,6 +28,23 @@ class http_request{
 		return (object)$_POST;
 	}
 
+	public function server(){
+		return (object)$_SERVER;
+	}
+
+	public function currents($getvar){
+		$filename = str_replace('index.php','session', $this->server()->SCRIPT_NAME);
+		return $filename.'?'.$getvar.'='.$this->get()->$getvar;
+	}
+
+	public function cookie(){
+		return (object)$_COOKIE;
+	}
+
+	public function sessions(){
+		return (object)$_SESSION;
+	}
+
 	public function file(){
 		return (object)$_FILE;
 	}

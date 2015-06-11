@@ -176,7 +176,7 @@ if($Uinfo['about']=='')
 			</a>';
 			echo '
 			<a href="'.conf('url').'profile/'.$_GET['indentity'].'?user=page">
-			<li class="erasein '.@$ActiveMN['pageman'].'"><i class="fa fa-file fa-lg"></i> &nbsp;Page Management</li>
+			<li class="erasein '.@$ActiveMN['page'].'"><i class="fa fa-file fa-lg"></i> &nbsp;Page Management</li>
 			</a>';
 			echo '
 			<a href="'.conf('url').'profile/'.$_GET['indentity'].'?user=settings">

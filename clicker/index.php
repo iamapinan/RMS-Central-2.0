@@ -1,8 +1,14 @@
 <?php
 include('startup.php');
 
-$online = new libs\OnlineDetect;
-$student['count'] = 10;//count($course->cdp['student']);
+
+
+	$online = new libs\OnlineDetect;
+	$student['count'] = 2;//count($course->cdp['student']);
+	
+	//print_r($http->request());
+	$SReq = @$http->get()->q;
+	if($SReq=='') $SReq = $config['hometab'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -23,111 +29,42 @@ $student['count'] = 10;//count($course->cdp['student']);
 		<nav class="navbar navbar-default navbar-static-top">
 			<div class="container-fluid ">
 				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+				        <span class="sr-only">Toggle navigation</span>
+				        <span class="icon-bar"></span>
+				        <span class="icon-bar"></span>
+				        <span class="icon-bar"></span>
+				      </button>
 					<a class="navbar-brand">
-						<span><img class="img-rounded" 
+						<span><img alt="Brand" class="img-rounded" 
 						src="img.php?width=30&height=30&cropratio=1:1&image=/clicker/data/<?php echo $course->cdp['course_id'];?>/default_thumbnail.jpg" 
 						width="30" height="30"></span>
 						&nbsp;<?php echo $course->cdp['cname'];?>
 					</a>
 				</div>
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      				<ul class="nav navbar-nav">
+      					<li <?php if($SReq=='student') echo 'class="active"';?>>
+      						<a href="<?php echo $http->currents('crs').'&q=student';?>"><i class="fa fa-child"></i> นักเรียน</a>
+      					</li>
+      					<li <?php if($SReq=='media') echo 'class="active"';?>>
+      						<a href="<?php echo $http->currents('crs').'&q=media';?>"><i class="fa fa-leanpub"></i> สื่อการสอน</a>
+      					</li>
+      					<li <?php if($SReq=='report') echo 'class="active"';?>>
+      						<a href="<?php echo $http->currents('crs').'&q=report';?>"><i class="fa fa-bar-chart"></i> รายงาน</a>
+      					</li>
+      					<li <?php if($SReq=='configs') echo 'class="active"';?>>
+      						<a href="<?php echo $http->currents('crs').'&q=configs';?>"><i class="fa fa-gear"></i>  ตั้งค่า</a>
+      					</li>
+      				</ul>
+      				<button type="button" class="btn btn-danger navbar-btn navbar-right">เลิกเรียน <i class="fa fa-sign-out"></i></button>
+      			</div>
 			</div>
 		</nav>
 		<div class="container-fluid">
-		  <div class="row">
-		  	<div class="col-md-10">
-		  		<h2 class="text-center">นักเรียน 
-		  		<a href="#" data-toggle="tooltip" data-placement="right" title="จำนวนนักเรียนที่ลงทะเบียนเรียนวิชานี้">(<?php echo $student['count'];?>)</a>
-		  		</h2>
-		  		<br>
-		  		<div class="panel panel-default">
-				  <div class="panel-body display-area">
-
-					    <div class="thumbnail" id="1">
-					      <img src="img.php?width=120&height=120&cropratio=1:1&image=/clicker/data/70/std-111.jpg" class="img-rounded online">
-					      <div class="caption text-center">
-					        <h3>วินัย ใจดี</h3>
-					      </div>
-					    </div>
-
-					    <div class="thumbnail" id="2">
-					      <img src="img.php?width=120&height=120&cropratio=1:1&image=/clicker/data/70/std-111.jpg" class="img-rounded offline">
-					      <div class="caption text-center">
-					        <h3>วินัย ใจดี</h3>
-					      </div>
-					    </div>
-
-					    <div class="thumbnail" id="3">
-					      <img src="img.php?width=120&height=120&cropratio=1:1&image=/clicker/data/70/std-111.jpg" class="img-rounded online">
-					      <div class="caption text-center">
-					        <h3>วินัย ใจดี</h3>
-					      </div>
-					    </div>
-
-					    <div class="thumbnail" id="4">
-					      <img src="img.php?width=120&height=120&cropratio=1:1&image=/clicker/data/70/std-111.jpg" class="img-rounded online">
-					      <div class="caption text-center">
-					        <h3>วินัย ใจดี</h3>
-					      </div>
-					    </div>
-
-					    <div class="thumbnail" id="5">
-					      <img src="img.php?width=120&height=120&cropratio=1:1&image=/clicker/data/70/std-111.jpg" class="img-rounded online">
-					      <div class="caption text-center">
-					        <h3>วินัย ใจดี</h3>
-					      </div>
-					    </div>
-
-					    <div class="thumbnail" id="6">
-					      <img src="img.php?width=120&height=120&cropratio=1:1&image=/clicker/data/70/std-111.jpg" class="img-rounded online">
-					      <div class="caption text-center">
-					        <h3>วินัย ใจดี</h3>
-					      </div>
-					    </div>
-
-					    <div class="thumbnail" id="7">
-					      <img src="img.php?width=120&height=120&cropratio=1:1&image=/clicker/data/70/std-111.jpg" class="img-rounded offline">
-					      <div class="caption text-center">
-					        <h3>วินัย ใจดี</h3>
-					      </div>
-					    </div>
-
-					    <div class="thumbnail" id="8">
-					      <img src="img.php?width=120&height=120&cropratio=1:1&image=/clicker/data/70/std-111.jpg" class="img-rounded online">
-					      <div class="caption text-center">
-					        <h3>วินัย ใจดี</h3>
-					      </div>
-					    </div>
-
-					    <div class="thumbnail" id="9">
-					      <img src="img.php?width=120&height=120&cropratio=1:1&image=/clicker/data/70/std-111.jpg" class="img-rounded online">
-					      <div class="caption text-center">
-					        <h3>วินัย ใจดี</h3>
-					      </div>
-					    </div>
-
-					    <div class="thumbnail" id="10">
-					      <img src="img.php?width=120&height=120&cropratio=1:1&image=/clicker/data/70/std-111.jpg" class="img-rounded offline">
-					      <div class="caption text-center">
-					        <h3>วินัย ใจดี</h3>
-					      </div>
-					    </div>
-	
-				  </div>
-				</div>
-		  	</div>
-		    <div class="col-md-2">
-		  		<div class="list-group">
-		  		  <a href="#" class="list-group-item"><i class="fa fa-check"></i> &nbsp;เช็คชื่อเข้าเรียน</a>
-				  <a href="javascript:repeat();" class="list-group-item"><i class="fa fa-random"></i> &nbsp;สุ่มนักเรียน 1 คน</a>
-				  <a href="#" class="list-group-item"><i class="fa fa-magnet"></i> &nbsp;สุ่มนักเรียนโดยระบุจำนวนคน</a>
-				  <a href="#" class="list-group-item disabled"><i class="fa fa-users"></i> &nbsp;จัดการกลุ่ม</a>
-				  <a href="#" class="list-group-item disabled"><i class="fa fa-trophy"></i> &nbsp;จัดการคะแนน</a>
-				  <a href="#" class="list-group-item"><i class="fa fa-gear"></i> &nbsp;การตั้งค่า</a>
-				  <a href="#" class="list-group-item"><i class="fa fa-sign-out"></i> &nbsp;เลิกเรียน</a>
-				</div>
-		  	</div>
-		  </div>
-
+		  <?php
+		  	include('template/'.$SReq.'.php');
+		  ?>
 		</div>
 	</body>
 </html>

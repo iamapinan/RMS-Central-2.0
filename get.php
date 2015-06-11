@@ -114,7 +114,7 @@ switch($_GET['t']){
 		}
 		$io['body'] .= '<div class="section-lb">
 			<p align="center">
-			<button class="btGreen" onclick="window.open(\'/clicker/?crs='.base64_encode($course['course_id']).'\',\'clicker\')">เริ่มทันที</button>
+			<button class="btGreen" onclick="window.open(\'/clicker/session?crs='.base64_encode($course['course_id']).'\',\'clicker\')">เริ่มทันที</button>
 			</p><br>
 		</div>';
 		
