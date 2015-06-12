@@ -1,0 +1,8 @@
+<style type="text/css">
+.text-input{
+  width: 198px;
+}
+.view{
+font-size: 12px;
+}
+</style>

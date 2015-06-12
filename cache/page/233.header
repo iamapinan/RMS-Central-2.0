@@ -1,0 +1,174 @@
+<style type="text/css">
+<!--
+input {
+    max-width: 430px;
+}
+textarea{width: 430px;height: 100px;resize: vertical;}
+#middleContainer{float:left;}
+#leftContainer{float:left;}
+.header {
+    font-size: 18px;
+}
+.menu p{margin: 5px 0;text-align: left;}
+.title {
+    font-size: 13px;
+    margin-top: 10px;
+    color: #8C8C8C;
+    font-weight: bold;
+}
+.frm-group {
+    width: 100%;
+    margin: 5px 0 10px 0;
+    height: auto;
+}
+.frm-group:hover .title {
+    background: #F9FFD8;
+    color: #005092;
+}
+.tipcontainer {
+    margin: 15px 0;
+    padding: 5px;
+}
+.tipcontainer .data-info {
+    background: #CDFBF6;
+    display: block;
+    padding: 10px;
+    border-radius: 4px;
+    margin: 5px 0;
+}
+#boxUI .header {
+    line-height: 20px;
+    width: 100%;
+    font-weight: bold;
+    padding: 10px 0 10px 10px;
+    display: block;
+    text-align: left;
+    color: #525252;
+    border-radius: 6px;
+    background-color: #EEE;
+    margin-bottom: 20px;
+}
+.boxContainer *{
+-webkit-transition: all 0.2s ease-in-out;
+ -moz-transition: all 0.2s ease-in-out;
+ -o-transition: all 0.2s ease-in-out;
+transition: all 0.2s ease-in-out;
+}
+img#captcha {
+    float: left;
+}
+.captcha-image {
+    height: 75px;
+}
+.captcha-session {
+    width: 200px;
+    margin-bottom: 30px;
+    margin-top: 10px;
+    background-color: #E8E8E8;
+    border: 1px solid #D0D0D0;
+    border-radius: 3px;
+    padding: 10px;
+    position: relative;
+}
+#change-image {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    color: #FD7D2F;
+}
+input#captcha-form {
+    width: 190px;
+    border: none;
+    padding: 8px 5px;
+    background-color: #FFF8D8;
+    border-radius: 0;
+}
+ul.uls {
+    position: absolute;
+    left: 21px;
+    list-style: none;
+    background-color: #FFF;
+    padding: 10px;
+    border: 1px solid #CCC;
+    margin-top: -1px;
+    z-index: 1;
+    box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.12);
+    line-height: 21px;
+}
+ul.uls li {
+    padding: 2px 4px;
+}
+ul.uls li:hover {
+    background-color: #FFF1D0;
+    cursor: pointer;
+}
+.menulist {
+    position: relative;
+}
+.member-list {
+    display: block;
+    margin: 5px 0 10px 0;
+}
+.member_selected {
+    display: inline-block;
+    padding: 3px;
+    background-color: #CBFBFB;
+    border: 1px solid #AAE4DD;
+    margin: 2px;
+}
+//-->
+</style>
+
+<script type="text/javascript">
+function select_user(name, uid){
+   $('.member-list').append('<span class="member_selected" id="member-id-'+uid+'"><input type="hidden" name="member_group[]" value="'+uid+'">'+name+' <a href="javascript:void(0);" onclick="$(\'#member-id-'+uid+'\').remove();"><i class="fa fa-times"></i></a></span>');
+   $('.uls').hide();
+   $('#idCheck').val('').focus();
+}
+$(document).ready(function() {
+    $('#idCheck').keypress(function(){
+       if($(this).val()!=''){
+           $.get( "/search.php?search_type=user&mod=4&q="+$(this).val(), function( data ) {
+                $('.uls').slideDown().html(data);
+           });
+       }
+  })
+  $('#select_course_type').change(function(){
+     var ths= $(this).find(':selected').val();
+     switch(ths){
+           case "standard":
+              console.log(ths);
+              $('.data-info').css('background-color','#fff');
+              $('#'+ths).css('background-color','#eaf');
+              $('#cgx').show();
+              $('#cgx select').attr('required',true);
+              $('#cgx .title').html('กลุ่มสาระวิชา <sup class="text-red">บังคับ</sup>');
+              $('#cgd').show();
+              $('#cgd select').attr('required',true);
+              $('#cgd .title').html('ระดับชั้น <sup class="text-red">บังคับ</sup>');
+           break;
+           case "extra":
+              console.log(ths);
+              $('.data-info').css('background-color','#fff');
+              $('#'+ths).css('background-color','#eaf');
+              $('#cgx').hide();
+              $('#cgx select').removeAttr('required');
+              $('#cgd').show();
+              $('#cgd select').attr('required',true);
+              $('#cgd .title').html('ระดับชั้น <sup class="text-red">บังคับ</sup>');
+           break;
+           case "public":
+              console.log(ths);
+              $('.data-info').css('background-color','#fff');
+              $('#'+ths).css('background-color','#eaf');
+              $('#cgx').hide();
+              $('#cgx select').removeAttr('required');
+              $('#cgd').hide();
+              $('#cgd select').removeAttr('required');
+              $('#alwpb').show();
+           break;
+           
+     }
+  });
+});
+</script>

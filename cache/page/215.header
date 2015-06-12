@@ -1,0 +1,70 @@
+<style type="text/css">
+div#ContentBody{margin-top:60px;}
+.searchtitle{
+position: relative;
+z-index: 10;
+background: #fff;
+width:100%;
+}
+.subx {
+display: block;
+text-align: left;
+padding: 7px 8px;
+line-height: 25px;
+background: #EDEDED;
+border-radius: 4px;
+border: 1px solid #ccc;
+}
+#idmCL > p span.des {
+margin: 5px;
+width: 99%;
+display: block;
+color: #2E2E2E;
+font-weight: normal;
+}
+
+ul.blog-content-result {
+display: block;
+width: 100%;
+background: #fff;
+position: relative;
+z-index: 10;
+}
+ul.blog-content-result li {
+display: inline-block;
+width: 475px;
+padding: 5px;
+margin: 5px;
+vertical-align: top;
+}
+ul.blog-content-result li > img.bgpic {
+display: inline-block;
+width: 100px;
+height: 100px;
+vertical-align: top;
+}
+ul.blog-content-result li > span.restext {
+vertical-align: top;
+padding-left: 5px;
+display: inline-block;
+width: 365px;
+height: 90px;
+color: #333;
+}
+</style>
+<script language="javascript">
+function getsub(cat,t)
+{
+     $.post('/social_func.php?g=listsubcat&t='+t+'&id='+cat, function(data){
+         if(data==1){  
+		 $('#choice').hide();
+		 $('#choice').html(''); 
+		 return false; }
+         else{ 
+		 $('#choice').show();
+		 $('#choice').html(data); 
+		}
+     });
+}
+
+</script>

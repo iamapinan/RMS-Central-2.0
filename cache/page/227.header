@@ -1,0 +1,13 @@
+<style>
+div#choice {
+margin: 10px 0;
+display:none;
+}
+span.bloggroupchoice {
+display: inline-block;
+vertical-align: top;
+padding: 5px;
+border: 1px solid #eee;
+margin: 2px;
+}
+</style>

@@ -1,0 +1,142 @@
+<link rel="stylesheet" type="text/css" href="/library/tcal.css"  media="screen"  charset="utf-8"/>
+<script type="text/javascript" src="/library/tcal.js"></script>
+<style type="text/css">
+<!--
+.warning{
+display: none;
+color: red;
+padding: 5px;
+width: 380px;
+text-align: center;
+float: right;
+margin: 5px auto 15px auto;
+}
+span.label{width: 250px;margin-right: 10px;float: left;}
+#regisfrm {
+padding: 20px 10px;
+background: white;
+width: 790px;
+margin: 5px auto;
+}
+p.submitbt{
+margin: 10px 0px !important;
+padding: 10px 0px;
+height: auto;
+}
+#regisfrm .text-input{width: 280px  !important;background: #ffffff;}
+#reg_block{
+  width: 700px;
+  display:block;
+}
+.fw{
+  width: auto;
+  display:block;
+}
+#reg_block p{
+  margin: 5px auto;
+}
+.policy{
+  width: 290px;
+  height: 100px;
+  display: block;
+}
+div.title {
+font-size: 19px;
+font-weight: bold;
+border-bottom: 1px solid #AAA;
+padding: 5px;
+text-align: center;
+background: #FEFEFE;
+margin: 10px auto;
+}
+//-->
+</style>
+<script language="javascript">
+function checkID(id)
+{
+if(id.length != 13) return false;
+for(i=0, sum=0; i < 12; i++) sum += parseFloat(id.charAt(i))*(13-i); if((11-sum%11)%10!=parseFloat(id.charAt(12)))
+    return false; 
+return true;
+}
+
+function checkexists(e)
+{
+$('#citizid').css('background','url(/library/icon/350.GIF) right center no-repeat');
+setTimeout(function () {
+
+var em = $('#'+e).val();
+if(!checkID(em)){
+$('#'+e).css('border','1px solid #F00');
+$('#'+e).val('');
+$('#citizid').css('background','#fff');
+return false;
+}
+
+$.post('social_func.php?g=checkuser&data='+em, '',function(r){
+	if(r.result==1){
+            $('#alert_status').show();
+	           $('#alert_status .text').html('ไอดีนี้ถูกใช้ไปแล้ว');
+            $('#alert_status').delay(3000).fadeOut(400);
+            $('#'+e).val('');
+            $('#citizid').css('background','#fff');
+            $('#'+e).css('border','1px solid #ff5555');
+            return false;
+        }
+        else
+        {
+           $('#citizid').css('background','#fff');
+           $('#'+e).css('border','1px solid #11BB47');
+        }
+}, 'json');
+$('#'+e).css('border','1px solid #11BB47');
+}, 10000);
+}
+                      function switch_role(rk)
+			{
+			
+				$.ajax({
+				'url': '/get.php?role='+rk,
+				'type': 'GET',
+				'dataType': 'html',
+				'success': function (data)
+					{
+						$(".subset").html(data);
+					}
+				});
+			}
+function validmail(e)
+{
+var email = $('#'+e).val();
+var filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+if (filter.test(email)) {
+  $('#'+e).css('border','1px solid #11BB47');
+  return true;
+}
+else
+  {
+     $('#'+e).css('border','1px solid #ff5555');
+     $('#'+e).val('');
+return false;
+  }
+}
+
+function validschool(e)
+{
+var SnC = $('#'+e).val();
+var sid = $("#schoolid").val();
+if(SnC!=''&&sid!='') {
+   $('#'+e).css('border','1px solid green');
+   return true;
+}
+else
+  {
+     $('#'+e).css('border','1px solid #ff5555');
+     $('#'+e).val('');
+     return false;
+  }
+}
+$(document).ready(function(){
+$('input').click(function(){$('#tcal').css('visibility','hidden');});
+});
+</script>

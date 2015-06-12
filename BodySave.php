@@ -12,18 +12,28 @@ if(isset($_POST['action'])&&$_POST['action']=='newpage')
 	else
 	{
 	$url = str_replace(' ','_',strtolower($_POST['url']));
-	$q = 'INSERT INTO `'.conf('table_prefix').'_page`(`id`, `tid`, `uid`, `title`, `url`, `body`, `include`, `option`, `image`, `access_role`, `timestamp`) VALUES (NULL,0,'.$uid.',"'.mysql_real_escape_string($_POST['title']).'","'.str_replace('.','',$url).'","'.mysql_real_escape_string($_POST['body']).'","'.mysql_real_escape_string($_POST['include']).'","'.mysql_real_escape_string($setting).'",NULL,'.$_POST['role'].',"'.$stime.'")';
+
+	$q = 'INSERT INTO `'.conf('table_prefix').'_page`(`id`, `tid`, `uid`, `title`, `url`, `body`, `include`, `option`, `image`, `access_role`, `timestamp`) 
+	VALUES (NULL,0,'.$uid.',"'.mysql_real_escape_string($_POST['title']).'","'.str_replace('.','',$url).'","'.mysql_real_escape_string($_POST['body']).'","'.mysql_real_escape_string($_POST['include']).'","'.mysql_real_escape_string($setting).'",NULL,'.$_POST['role'].',"'.$stime.'")';
 	$save = mysql_query($q) || die(mysql_error());
 	$result['url'] = mysql_insert_id();
+
+	file_put_contents(conf('dir').'cache/page/'.$result['url'].'.header', $_POST['include']);
+	file_put_contents(conf('dir').'cache/page/'.$result['url'].'.php', $_POST['body']);
 	}
 }
 else
 {
-	$inc = @$_POST['script'];
-	$send=@$_POST['code'];
+	file_put_contents(conf('dir').'cache/page/'.$_POST['page'].'.header', $_POST['script']);
+	file_put_contents(conf('dir').'cache/page/'.$_POST['page'].'.php', $_POST['code']);
 
-	@$save = mysql_query('UPDATE '.conf('table_prefix').'_page SET body = "'.mysql_real_escape_string($send).'" , include = "'.mysql_real_escape_string($inc).'" WHERE id ='.$_POST['page']);
-
+	$save = mysql_query('UPDATE `'.conf('table_prefix').'_page` SET 
+		`option`="'.mysql_real_escape_string($_POST['pconfig']).'", 
+		`access_role`="'.$_POST['prole'].'", 
+		`title`="'.$_POST['ptitle'].'", 
+		`body` = "'.mysql_real_escape_string($_POST['code']).'" , 
+		`include` = "'.mysql_real_escape_string($_POST['script']).'" 
+		WHERE `id` ='.$_POST['page']) || die(mysql_error());
 }
 
 $result['stat']=$save?1:0;

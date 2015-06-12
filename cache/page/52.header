@@ -1,0 +1,142 @@
+<link rel="stylesheet" href="/library/plugin/redactor/redactor.css" type="text/css">
+<script src="/library/plugin/redactor/redactor.min.js"></script>
+<script src="/library/plugin/redactor/video.js"></script>
+<script src="/library/plugin/redactor/fontsize.js"></script>
+<script src="/library/plugin/redactor/imagemanager.js"></script>
+<script src="/library/plugin/redactor/fontcolor.js"></script>
+
+<script type="text/javascript">
+<!--
+
+function submit_content()
+{
+var contents = $('#content').redactor('code.get');
+var subject = $('#title').val();
+var group = $('#gp').val();
+var rqk= $('#rqk').val();
+var ulev = $('#lev').val();
+
+if(subject==''||contents=='<br>'||contents==''||contents=='<p>เขียนเนื้อหาของคุณ</p>'||group==null||ulev==null)
+{
+$('#alert_status').slideUp(300).fadeIn(400).html('กรุณาแก้ไขข้อมูลให้ถูกต้อง');
+$('#alert_status').delay(3000).fadeOut(400);
+if(subject==''){
+ $('#title').focus();
+ $('#title').attr('style','background-color: #fcc !important');
+}
+if(contents=='<br>'||contents==''||contents=='เขียนเนื้อหาของคุณ'){
+ $('#content').focus();
+}
+if(group==null){
+ $('#gp').focus();
+ $('#gp').attr('style','background-color: #fcc !important');
+}
+if(ulev==null){
+ $('#lev').focus();
+ $('#lev').attr('style','background-color: #fcc !important');
+}
+ return false;
+}else{
+
+     $.post('/save.php?q=blog&key='+rqk, $("form#bgp").serialize(), function(data){
+         $('#alert_status').slideUp(300).fadeIn(400).html('บันทึกเรียบร้อยแล้ว โปรดรอสักครู่...');
+         if(data.result==1){
+           $(window).unbind();
+           var tokenkey = $('#token').val();
+           window.location.href='/my?param=blog';
+         }
+         $('#alert_status').delay(3000).fadeOut(400);
+
+     },'JSON');
+}
+}
+
+$(document).ready(function(){
+//Cancel
+  $('#cancel').click(function(){
+     window.location.href="/";
+  });
+
+//Submit
+  $('#submitbt').click(function(){
+     submit_content();
+  });
+//Editor initial
+ var rqk = $('#rqk').val();
+ $('#content').redactor({ 
+     imageUpload: '/upload.php?ft=blog_img&rq='+rqk,
+     imageManagerJson: '/user_file.php',
+     fileUpload: '/upload.php?ft=blog_file&rq='+rqk,
+     convertVideoLinks: true,
+     plugins: ['fontcolor','fontsize','video','imagemanager'],
+     focus: true
+  });
+});
+
+trimCommas = function(s) {
+ s = s.replace(/^[,\s]+|[,\s]+$/g, '').replace(/,[,\s]*,/g, ',');
+ s = s.replace(/\s/g, "");
+ return s;
+}
+
+function repme()
+{
+	var stx = $('#title').val();
+	stx = stx.replace(" ", ",");
+	stx = stx.replace(/[^ 0-9A-Za-zก-๙,]/g, ",");
+        stx = trimCommas(stx);
+        if($('#keyword').val()=='')
+	   $('#keyword').val(stx);
+        else
+           $('#keyword').append(','+stx);
+}
+//-->
+</script>
+<style>
+#middleContainer {
+width: 692px !important;
+}
+.subx {
+display: block;
+text-align: left;
+padding: 7px 8px;
+line-height: 25px;
+background: #EDEDED;
+border-radius: 4px;
+border: 1px solid #ccc;
+}
+div.title{marign-bottom: 20px;}
+input#title, input#keyword{
+width: 480px;
+line-height: 18px !important;
+font-family: "lucida grande",tahoma,verdana,arial,sans-serif;
+min-height: 20px !important;
+background: #fff !important;
+border: 1px solid #cecece !important;
+padding: 3px 5px !important;
+margin: 10px 0px !important;
+border-radius: 0px !important;
+display:inline-block !important;
+}
+#content {
+  width: 970px;
+  height: 460px;
+  padding: 5px;
+  outline: none !important;
+  overflow-y: auto;
+}
+#content ol, #content ul{
+padding-left: 40px;
+}
+span.bloggroupchoice {
+display: inline-block;
+vertical-align: top;
+padding: 5px;
+border: 1px solid #eee;
+margin: 2px;
+}
+div#choice {
+margin: 10px 0;
+display:none;
+}
+</style>

@@ -1,0 +1,104 @@
+<script language="javascript">
+function embeddlg(bid)
+{
+	$("#sharedlg").slideDown(200);
+	$.post("/getpost.php?qr=post",{"pid":bid}, function(data) {
+              if(data.filetype=='blog'){
+		$(".urlcontainer").html(site_url+'blog/'+data.req_id);
+		$(".embedcontainer").html('&lt;iframe width=&quot;100%&quot; height=&quot;600&quot; src=&quot;'+site_url+'data/content/'+data.req_id+'/'+data.req_id+'.html&quot; frameborder=&quot;0&quot;&gt;&lt;/iframe&gt;');
+              }else
+              {
+		$(".urlcontainer").html(site_url+'user/'+data.username+'/studio_file/'+data.req_id+'/default.htm');
+		$(".embedcontainer").html('&lt;iframe width=&quot;100%&quot; height=&quot;600&quot; src=&quot;'+site_url+'user/'+data.username+'/studio_file/'+data.req_id+'/default.htm&quot; frameborder=&quot;0&quot;&gt;&lt;/iframe&gt;');
+              }
+	}, "json");
+}
+function getsub(cat,t)
+{
+     $.post('/social_func.php?g=listoption&t='+t+'&id='+cat, function(data)
+     {
+         if(data==1){  
+		 $('#choice').hide();
+		 $('#choice').html(''); 
+		 return false; 
+	 }
+         else{ 
+		 $('#choice').show();
+		 $('#choice').html(data); 
+		}
+     });
+}
+
+</script>
+<style>
+#boxUI {
+padding: 0;
+margin: 10px 10px 5px 0px;
+display: inline-block;
+text-align: left;
+vertical-align: top;
+}
+#boxUI .boxContent {
+margin: 5px 0px;
+padding: 5px;
+height: auto;
+display: block;
+text-align: left;
+word-wrap: break-word;
+width: 100%;
+}
+#idmCL > p {
+display: inline-block;
+position: relative;
+cursor: pointer;
+margin-top: 1px;
+overflow-x: hidden;
+width: 480px;
+font-weight: bold;
+margin-left: -5px;
+margin-bottom: 5px;
+padding: 5px;
+height: auto;
+border-bottom: 2px solid transparent;
+}
+#boxUI .header {
+line-height: 20px;
+height: 20px;
+width: 100%;
+border-bottom: 1px solid #CFCFCF;
+font-size: 12px;
+font-weight: bold;
+padding: 0px 0 15px 5px;
+display: block;
+text-align: left;
+color: #525252;
+}
+#choice{display:inline-block;}
+.toolbox {
+margin: 10px 0;
+text-align: center;
+}
+#sharedlg {
+display: none;
+position: fixed;
+top: 140px;
+margin-left: 100px;
+z-index: 1;
+background: #fff;
+padding: 10px;
+border: 1px solid #ccc;
+box-shadow: 0 0 10px rgba(51, 51, 51, 0.17);
+border-radius: 6px;
+width: 730px;
+height: auto;
+}
+.cc{display:none;margin-top: 10px;float:left;}
+#idmCL > p span.des {
+margin: 5px;
+width: 74%;
+display: block;
+color: #2E2E2E;
+float: right;
+font-weight: normal;
+}
+</style>

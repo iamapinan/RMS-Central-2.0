@@ -1,0 +1,81 @@
+<style type="text/css">
+
+.resf{
+padding: 20px 10px;
+width: 790px;
+background: #fff;
+margin: 10px auto;
+display: block;
+height: 300px;
+}
+.containblock{
+width: 40%;
+display: inline-block;
+padding: 10px 10px;
+float: left;
+}
+.containblock input[type^="text"]
+{
+width: 90%;
+}
+.containblock  .warning {
+display: none;
+color: red;
+padding: 5px;
+width: 97%;
+text-align: center;
+float: right;
+border-radius: 4px;
+border: 1px solid #FFE48D;
+margin: 5px auto 15px auto;
+}
+.containblock .success {
+color: black;
+padding: 5px;
+width: 97%;
+text-align: center;
+line-height: 19px;
+float: right;
+border-radius: 4px;
+border: 1px solid #099AEC;
+margin: 5px auto 15px auto;
+background: #90D2FF;
+}
+.qo{
+font-size: 35px;
+padding: 5px;
+color: green;
+}
+.resetpass-note{
+color: #5A5A5A;
+line-height: 16px;
+font-size: 11px;
+}
+.containblock p{
+margin: 8px auto;
+}
+div.title {
+font-size: 19px;
+font-weight: bold;
+border-bottom: 1px solid #AAA;
+padding: 5px;
+text-align: center;
+background: #FEFEFE;
+margin: 10px auto;
+}
+.descblock {
+width: 50%;
+display: inline-block;
+padding: 10px 8px;
+background: #D2FF98;
+border: 1px solid #C0E75A;
+float: left;
+}
+.Usetip {
+padding: 5px 30px;
+line-height: 20px;
+}
+.Usetip li{
+
+}
+</style>

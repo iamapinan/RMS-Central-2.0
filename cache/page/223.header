@@ -1,0 +1,65 @@
+<style type="text/css">
+.view {
+padding: 1em 0.8em;
+margin-top: -1em;
+}
+#resultbox {
+background: #000;
+color: #FFF;
+font-size: 13px;
+padding: 10px 6px;
+min-height: 10px;
+border: 1px solid #000;
+border-radius: 3px;
+box-shadow: inset 0 0 3px #FFF;
+line-height: 20px;
+}
+#resultbox ul {
+list-style: none;
+height: 400px;
+overflow-y: auto;
+}
+#resultbox ul li{
+padding-left: 25px;
+background: url('/library/images/rootshr.png') no-repeat left top;
+word-wrap: break-word;
+}
+.info {
+margin-top: 30px;
+line-height: 20px;
+font-size: 12px;
+color: #888;
+border-top: 1px solid #EEE;
+padding: 10px;
+}
+button#run{
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	color: #ffffff;
+	padding: 5px 14px;
+	background: -moz-linear-gradient(
+		top,
+		#8edb29 0%,
+		#2aa800);
+	background: -webkit-gradient(
+		linear, left top, left bottom,
+		from(#8edb29),
+		to(#2aa800));
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+	border: 1px solid #70ba00;
+	-moz-box-shadow:
+		0px 0px 0px rgba(000,000,000,0),
+		inset 0px 0px 0px rgba(255,255,255,0);
+	-webkit-box-shadow:
+		0px 0px 0px rgba(000,000,000,0),
+		inset 0px 0px 0px rgba(255,255,255,0);
+	box-shadow:
+		0px 0px 0px rgba(000,000,000,0),
+		inset 0px 0px 0px rgba(255,255,255,0);
+	text-shadow:
+		0px 0px 0px rgba(000,000,000,0),
+		0px 0px 0px rgba(255,255,255,0);
+}
+</style>

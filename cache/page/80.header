@@ -1,0 +1,118 @@
+<link href="/library/social_button.css" rel="stylesheet">
+<style type="text/css">
+<!--
+div#ContentBody{border:none;background-color:transparent;box-shadow:none;}
+.warning {
+display: none;
+color: red;
+padding: 5px;
+width: 380px;
+text-align: center;
+float: right;
+border-radius: 4px;
+}
+h2.title {
+  font-size: 28px;
+  font-weight: bold;
+  color: #313131;
+  padding: 3px 5px;
+  border:none;
+  text-align: right;
+}
+.lgt {
+vertical-align: top;
+font-size: 27px;
+text-align: left;
+padding-left: 10px;
+width: 181px;
+display: inline-block;
+}
+.shfrm{
+background: rgba(255, 255, 255, 0.74); 
+padding: 10px; 
+box-shadow: 0 0 9px rgba(51, 51, 51, 0.23);
+}
+.shfrm:hover{
+background: rgba(255, 255, 255, 0.9); 
+}
+span.label { display: block; width: 150px; margin: 2px 4px 2px 4px; text-align: left; }
+.display_0 {
+width: 580px;
+float: left;
+vertical-align: top;
+margin-right:10px;
+height: 360px; 
+}
+.display-1 {
+  width: 330px;
+  float: left;
+}
+ul.news-blck {
+  display: block;
+  min-height: 436px;
+  background-color: #fff;
+  border-radius: 3px;
+  padding: 10px;
+  box-shadow: 0 -3px 6px rgba(0, 0, 0, 0.02);
+}
+ul.news-blck li.news-items {
+list-style: none;
+display: block;
+padding: 5px;
+line-height: 21px;
+margin-bottom: 5px;
+}
+.regisfrm {
+  padding: 20px 10px;
+  background: #fff;
+  border-radius: 3px;
+  box-shadow: box-shadow: 0 -3px 6px rgba(0, 0, 0, 0.02);
+  width: 330px;
+  display: inline-block;
+}
+p.submitbt{
+margin: 10px 0px !important;
+padding: 10px 0px;
+height: auto;
+}
+.regisfrm .text-input{width: 280px  !important;background: #ffffff;}
+form#loginfrom { padding-left: 20px; }
+.regisfrm p{
+  margin: 5px auto;
+}
+ img.bgpic {
+display: inline-block;
+width: 100px;
+height: 100px;
+vertical-align: top;
+}
+span.restext {
+vertical-align: top;
+padding-left: 5px;
+display: inline-block;
+width: 440px;
+height: 90px;
+color: #333;
+}
+.ext-login{
+width: 117px;
+height: 30px;
+display:block;
+overflow: hidden;
+}
+.policy{
+  width: 290px;
+  height: 100px;
+  display: block;
+}
+div.title {
+font-size: 19px;
+font-weight: bold;
+border-bottom: 1px solid #AAA;
+padding: 5px;
+text-align: center;
+background: #FEFEFE;
+margin: 10px auto;
+}
+//-->
+</style>

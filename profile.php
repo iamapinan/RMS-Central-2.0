@@ -277,10 +277,10 @@ if($_GET['user']=='account')
 					</span></p>';
 			if($Uinfo['org']=='') 
 				{
-					echo '<p><span class="label" style="text-align:left;color: #7e7e7e;width: 80px;margin-left: 45px;display: inline-block;">&nbsp;</span> <span style="color: #f00;display: inline-block;margin: 2px 4px 6px 4px;">บัญชีนี้ไม่มีสามารถใช้งาน Aculearn</span></p';
+					echo '<p><span class="label" >&nbsp;</span> <span>บัญชีนี้ไม่มีสามารถใช้งาน Aculearn</span></p';
 				}
 			echo '<br>
-				<p><span class="label" style="text-align:left;color: #7e7e7e;width: 80px;margin-left: 45px;display: inline-block;">&nbsp;</span><a href="'.conf('idm_server').'aculearn-idm/setup/acuconsole7_setup.exe" class="btGray button"><icon class="fa fa-cloud-download"></icon> ดาวน์โหลด AcuConsole 7</a>
+				<p><span class="label">&nbsp;</span><a href="'.conf('idm_server').'aculearn-idm/setup/acuconsole7_setup.exe" class="btBlue button"><icon class="fa fa-cloud-download"></icon> ดาวน์โหลด AcuConsole 7</a>
 			</div>
 		</div>';
 
@@ -301,7 +301,7 @@ if($_GET['user']=='userman')
 					<div class="filtering" style="display:block;padding: 5px 10px 15px 10px;">
 						<form>
 							Name: <input type="text" name="name" id="shname" class="text-input" style="width: 280px;"/>
-							<button id="LoadRecordsButton" class="btBlue">Search</button>
+							<button id="LoadRecordsButton" class="button btBlue">Search</button>
 						</form>
 
 					</div>
@@ -590,7 +590,7 @@ if($_GET['user']=='settings')
 		if(getConf('live')==1) $livebox = 'checked';
 		if(getConf('blog')==1) $blogbox = 'checked';
 		if(getConf('devmode')==1) $devmode = 'checked';
-?>
+		?>
 	  <link rel="stylesheet" href="/library/toggle_style.css">
 	  <link rel="stylesheet" href="/library/plugin/redactor/redactor.css" type="text/css">
       	  <script src="/library/plugin/redactor/redactor.min.js"></script>
@@ -715,10 +715,7 @@ if($_GET['user']=='settings')
 					</div>
 
 				</div>
-			<?php
-				}
-				if($_GET['config']=='feature'){
-			?>
+				<?php } if($_GET['config']=='feature'){ ?>
 				<div class="boxLeft">
 					<h2 class="header">Feature settings</h2>
 					<p class="settings_title">My AcuStudio</p>
@@ -797,7 +794,7 @@ if($_GET['user']=='settings')
 			?>
 		</div>
 
-	<?php
+		<?php
 }
 if($_GET['user']=='course')
 {
@@ -812,7 +809,7 @@ if($_GET['user']=='course')
 		<i class="fa fa-book fa-lg"></i> My Courses
 	';
 	if($Uinfo['role']>=5)
-		echo  '<a href="/new_course"><span class="box-option button"><i class="fa fa-file"></i> สร้างรายวิชา</span></a>';
+		echo  '<a href="/new_course"><span class="box-option btBlue button"><i class="fa fa-file"></i> สร้างรายวิชา</span></a>';
 			//echo '<span class="pos-right"><input type="text" name="css" id="cs-search" placeholder="ค้นหา"></span>';
 	echo '</div>';
      	
@@ -848,10 +845,10 @@ if($_GET['user']=='course')
 								 <p>โดย '.$teacherText[1].'</p>
 							</div>
 							<div class="listbt">
-								<button class="btn btGray"><i class="fa fa-child"></i> นักเรียน</button>
-								<button class="btn btGray"><i class="fa fa-pencil"></i> แก้ไข</button>
-								<button class="btn btGray" disabled><i class="fa fa-trash-o"></i> ลบ</button>
-								<button class="btn btBlue" onClick="lightbox('.$cs['course_id'].')"><i class="fa fa-simplybuilt"></i> เริ่มห้องเรียน</button>
+								<button class="button btGray"><i class="fa fa-child"></i> นักเรียน</button>
+								<button class="button btGray"><i class="fa fa-pencil"></i> แก้ไข</button>
+								<button class="button btGray" disabled><i class="fa fa-trash-o"></i> ลบ</button>
+								<button class="button btBlue" onClick="lightbox('.$cs['course_id'].')"><i class="fa fa-simplybuilt"></i> เริ่มห้องเรียน</button>
 							</div>
 						</div>
 						';
@@ -881,9 +878,9 @@ if($_GET['user']=='course')
 								  <p>โดย '.$teacherText[2].'</p>
 							</div>
 							<div class="listbt">
-								<button class="btn btGray"><i class="fa fa-pencil"></i> แก้ไข</button>
-								<button class="btn btGray" disabled><i class="fa fa-trash-o"></i> ลบ</button>
-								<button class="btn btBlue" onClick="lightbox('.$cs['course_id'].')"><i class="fa fa-simplybuilt"></i> เริ่มห้องเรียน</button>
+								<button class="button btGray"><i class="fa fa-pencil"></i> แก้ไข</button>
+								<button class="button btGray" disabled><i class="fa fa-trash-o"></i> ลบ</button>
+								<button class="button btBlue" onClick="lightbox('.$cs['course_id'].')"><i class="fa fa-simplybuilt"></i> เริ่มห้องเรียน</button>
 							</div>
 						</div>
 						';
@@ -912,9 +909,9 @@ if($_GET['user']=='course')
 								 <p>โดย '.$teacherText[3].'</p>
 							</div>
 							<div class="listbt">
-								<button class="btn btGray"><i class="fa fa-pencil"></i> แก้ไข</button>
-								<button class="btn btGray" disabled><i class="fa fa-trash-o"></i> ลบ</button>
-								<button class="btn btBlue" onClick="lightbox('.$cs['course_id'].')"><i class="fa fa-simplybuilt"></i> เริ่มห้องเรียน</button>
+								<button class="button btGray"><i class="fa fa-pencil"></i> แก้ไข</button>
+								<button class="button btGray" disabled><i class="fa fa-trash-o"></i> ลบ</button>
+								<button class="button btBlue" onClick="lightbox('.$cs['course_id'].')"><i class="fa fa-simplybuilt"></i> เริ่มห้องเรียน</button>
 							</div>
 						</div>
 						';
@@ -946,7 +943,7 @@ if($_GET['user']=='class')
                         else if(x>=7)
                             classhtml += "<div class=\"form-row\"><label>มัธยมศึกษาปีที่ "+(x-6)+" จำนวนห้อง:</label> <input type=\"number\" name=\"class_"+x+"\" value=\"1\" style=\"width: 30px\" max=15 min=1></div>"
                     }
-                    classhtml += "<p class=\"divider\"></p><button class=\'btGreen\'>บันทึกการตั้งค่าห้องเรียน</button>"  
+                    classhtml += "<p class=\"divider\"></p><button class=\'btGreen button\'>บันทึกการตั้งค่าห้องเรียน</button>"  
                     $(".class_option").html(classhtml);
                 
             })
@@ -956,7 +953,7 @@ if($_GET['user']=='class')
 
 	echo '<div id="boxUI">
 				<div class="header"><i class="fa fa-cube fa-lg"></i> My Organization
-				<a href="/new_classroom"><span class="box-option button"><i class="fa fa-file"></i> สร้างห้องเรียนพิเศษ</span></a>
+				<a href="/new_classroom"><span class="box-option btBlue button"><i class="fa fa-file"></i> สร้างห้องเรียนพิเศษ</span></a>
 				</div>';
 	echo '<div class="boxContent" id="idmCL">';
 	echo '<div class="thumbnail-list">';
@@ -1019,9 +1016,9 @@ if($_GET['user']=='class')
                              <p>จำนวนนักเรียน '.$class_register_check1.' คน<p>
                             </div>
                             <div class="listbt">
-                                <button class="btn btGray"><i class="fa fa-users"></i> นักเรียน</button>
-                                <button class="btn btGray"><i class="fa fa-pencil"></i> แก้ไข</button>
-                                <button class="btn btGray"><i class="fa fa-trash-o"></i>  ลบ</button>
+                                <button class="button btGray"><i class="fa fa-users"></i> นักเรียน</button>
+                                <button class="button btGray"><i class="fa fa-pencil"></i> แก้ไข</button>
+                                <button class="button btGray"><i class="fa fa-trash-o"></i>  ลบ</button>
                             </div>
                             
                         </div>
@@ -1053,9 +1050,9 @@ if($_GET['user']=='class')
                          if($client['role']>=6):
                          echo '
                             <div class="listbt">
-                                <button class="btn btGray"><i class="fa fa-users"></i> นักเรียน</button>
-                                <button class="btn btGray"><i class="fa fa-pencil"></i> แก้ไข</button>
-                                <button class="btn btGray"><i class="fa fa-trash-o"></i>  ลบ</button>
+                                <button class="button btGray"><i class="fa fa-users"></i> นักเรียน</button>
+                                <button class="button btGray"><i class="fa fa-pencil"></i> แก้ไข</button>
+                                <button class="button btGray"><i class="fa fa-trash-o"></i>  ลบ</button>
                             </div>';
                          endif;
 
@@ -1074,7 +1071,7 @@ if($_GET['user']=='group')
 	$strsql = mysql_query("SELECT * FROM `".conf('table_prefix')."_social_group` WHERE `admin`='".$Uinfo['user']."'  ORDER BY `sgid` DESC LIMIT 0,30");
 	echo '<div id="boxUI">
 				<div class="header"><i class="fa fa-users fa-lg"></i> My Groups
-				<a href="/new_group"><span class="box-option button"><i class="fa fa-file"></i> สร้างกลุ่มใหม่</span></a>
+				<a href="/new_group"><span class="box-option button btBlue"><i class="fa fa-file"></i> สร้างกลุ่มใหม่</span></a>
 				</div>';
 	echo '<div class="boxContent" id="idmCL">';
 	echo '<div class="md-list">';
@@ -1107,7 +1104,7 @@ if($_GET['user']=='page')
 	$sql = mysql_query("SELECT id,title,url,access_role,timestamp FROM ".conf('table_prefix')."_page");
 
 	echo '<div id="boxUI">
-				<div class="header"><i class="fa fa-file fa-lg"></i> Page Management<a href="/newpage"><span class="box-option button"><icon class="fa fa-file"></icon> สร้างหน้าใหม่</span></a></div>';
+				<div class="header"><i class="fa fa-file fa-lg"></i> Page Management<a href="/newpage"><span class="box-option button btBlue"><icon class="fa fa-file"></icon> สร้างหน้าใหม่</span></a></div>';
 	echo '<div class="boxContent" id="idmCL">';
 	while($page = mysql_fetch_array($sql)){
 		echo '<div class="plist">
@@ -1265,16 +1262,16 @@ if($_GET['user']=='blog')
 	echo '<div id="boxUI">
 				<div class="header"><i class="fa fa-quote-right fa-lg"></i> My Blog ';
 	if($_SESSION['loginid']['nickname']==$_GET['indentity'])
-		echo '<a href="/new_blog"><span class="box-option button"><icon class="fa fa-file"></icon> สร้างบทควาามใหม่</span></a>';
+		echo '&nbsp;<a href="/new_blog"><span class="box-option button btBlue"><icon class="fa fa-file"></icon> สร้างบทควาามใหม่</span></a>&nbsp;';
 
 	if($_GET['sort']=='desc'||$_GET['sort']=='') $lock[1]='selected';
 	if($_GET['sort']=='asc') $lock[2]='selected';
 	if($_GET['sort']=='subject') $lock[3]='selected';
-	echo '	<select id="bsort"  class="box-option" style="height: 28px !important;">
+	echo '&nbsp;<select id="bsort"  class="box-option" style="height: 28px !important;">
 				<option value="desc" '.$lock[1].'>ใหม่อยู่ด้านบน</option>
 				<option value="asc" '.$lock[2].'>เก่าสุดอยู่ด้านบน</option>
 				<option value="subject" '.$lock[3].'>เรียงตามตัวอักษร</option>
-				</select>
+				</select>&nbsp;
 		</div>';
 	echo '
 	<script type="text/javascript">
@@ -1359,7 +1356,7 @@ if($_GET['user']=='contents')
 			<p><span class="text-title">ผู้ผลิต</span> <input type="text" name="author" required> </p>
 			<p><textarea name="fileinfo" class="acminfo" placeholder="เลือกไฟล์ที่มีนามสกุล acm, acmx หรือ zip เท่านั้น แล้วเติมคำอธิบายสักหน่อย..." ></textarea></p>
 			<p>
-				<input type="submit"  value=" Upload " class="btPost"/>
+				<input type="submit"  value=" Upload " class="button btPost"/>
 				<input type="button" class="btGray button" onclick="$(\'#studio-uploader\').slideUp(100);" value=" Cancel "/>
 				<input type="checkbox" name="public" value="1"> เผยแพร่ต่อสาธารณะหรือไม่?
 			</p>
@@ -1373,7 +1370,7 @@ if($_GET['user']=='contents')
 			<p><span class="text-title">ชื่อเรื่อง</span> <input type="text" name="title" id="acm-update-title" required> </p>
 			<p><textarea name="fileinfo" class="acminfo" id="acm-update-desc"></textarea></p>
 			<p>
-				<input type="submit"  value=" Save " class="btPost"/>
+				<input type="submit"  value=" Save " class="btPost button"/>
 				<input type="button" class="btGray button" onclick="$(\'#studio-update\').slideUp(100);" value=" Cancel "/>
 				<input type="checkbox" name="public" value="1" id="acm-update-pb"> เผยแพร่ต่อสาธารณะหรือไม่?
 			</p>
@@ -1416,8 +1413,8 @@ if(!isset($_SESSION['loginid'])&&@$_SESSION['loginid']['nickname']=='')
 {
 	echo '<div id="rightContainer"  class="scroll-sidebar">';
 	echo '<div class="u-action">';
-	echo '<a href="/home"><span class="button ProfileBt">เข้าสู่ระบบ</span></a>';
-	echo '<a href="/home"><span class="button ProfileBt">สมัครสมาชิก</span></a>';
+	echo '<a href="/home"><span class="button btGreen">เข้าสู่ระบบ</span></a>';
+	echo '<a href="/home"><span class="button btPost">สมัครสมาชิก</span></a>';
 	echo '</div>';
 	echo '<div class="clear">&nbsp;</div>';
 	echo '</div>';

@@ -1,0 +1,8 @@
+<style type="text/css">
+.thumbnail-list .list-items .listbt {
+  width: 349px;
+}
+.thumbnail-list {
+  margin: 20px 0;
+}
+</style>

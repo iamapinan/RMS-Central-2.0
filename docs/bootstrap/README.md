@@ -1,4 +1,14 @@
 ## Unofficial Bootstrap + Font awesome with offline document.
+
+## FontAwesome
+To get started font-awesome on github <https://github.com/FortAwesome/Font-Awesome>!
+
+Font Awesome is a full suite of 519 pictographic icons for easy scalable vector graphics on websites,
+created and maintained by [Dave Gandy](http://twitter.com/davegandy).
+Stay up to date with the latest release and announcements on Twitter:
+[@fontawesome](http://twitter.com/fontawesome).
+
+## Bootstrap
 Bootstrap is a sleek, intuitive, and powerful front-end framework for faster and easier web development, created by [Mark Otto](https://twitter.com/mdo) and [Jacob Thornton](https://twitter.com/fat), and maintained by the [core team](https://github.com/orgs/twbs/people) with the massive support and involvement of the community.
 
 To get started, check out <http://getbootstrap.com>!
@@ -104,15 +114,21 @@ Get updates on Bootstrap's development and chat with the project maintainers and
 - Implementation help may be found at Stack Overflow (tagged [`twitter-bootstrap-3`](https://stackoverflow.com/questions/tagged/twitter-bootstrap-3)).
 - Developers should use the keyword `bootstrap` on packages which modify or add to the functionality of Bootstrap when distributing through [npm](https://www.npmjs.com/browse/keyword/bootstrap) or similar delivery mechanisms for maximum discoverability.
 
-
-
 ## Versioning
 
 For transparency into our release cycle and in striving to maintain backward compatibility, Bootstrap is maintained under [the Semantic Versioning guidelines](http://semver.org/). Sometimes we screw up, but we'll adhere to those rules whenever possible.
 
+## Modify by
 
+**Apinan Woratrakun**
 
-## Creators
+## Creators of Font Awesome
+
+- Email: dave@fontawesome.io
+- Twitter: http://twitter.com/davegandy
+- GitHub: https://github.com/davegandy
+
+## Creators of Bootstrap
 
 **Mark Otto**
 

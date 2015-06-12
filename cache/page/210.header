@@ -1,0 +1,73 @@
+<link rel="stylesheet" type="text/css" href="/library/plugin/uploadifive/uploadifive.css">
+<script type="text/javascript" src="/library/plugin/uploadifive/jquery.uploadifive.min.js"></script>
+<script language="javascript">
+
+$(function() {
+        var TKey = $('#tk').val();
+	$('#file_upload').uploadifive({
+	  'uploadScript'      : '/save.php',
+          'method'   : 'post',
+          'formData'  : {'token':TKey, 'action':'upload_user_list', 'debug':1},
+          'fileObjName' : 'Filedata',
+          'buttonText'   : 'เลือกไฟล์ Excel',
+          'auto'    : true,
+          'dnd'          : true,
+          'fileSizeLimit'   : '5MB',
+          'onUploadComplete'  : function(file, data) {
+              var jsonp = $.parseJSON(data);
+              var resx;
+
+              for(x=1;x<=jsonp.maxuser;x++){
+                 resx += "<tr><td>"+jsonp.user[x].name+"</td><td>"+jsonp.user[x].email+"</td><td>"+jsonp.user[x].user+"</td><td>"+jsonp.user[x].password+"</td></tr>";
+              }
+
+               if(jsonp.success==1)
+               {
+                 $('#uploadzone').html("<span>สำเร็จแล้ว</span>");
+                 resx = resx.replace("undefined","");
+                 $('#result').fadeIn();
+                 $('#result').html("<table border='0' width='800' id='restable'><tbody><tr><th>ชื่อ-นามสกุล</th><th>อีเมล์</th><th>บัญชีผู้ใช้</th><th>รหัสผ่าน</th></tr>"+resx+"</tbody></table>");
+               }
+          }
+	});
+
+});
+
+</script>
+<style type="text/css">
+#uploadzone{
+width: 800px;
+display: block;
+margin: 80px auto;
+text-align: center;
+}
+#uploadzone span{
+font-size: 20px;
+font-weight: bold;
+}
+#uploadzone p{
+width: 500px !important;
+margin: 3px auto !important;
+text-align: left !important;
+font-size: 12px;
+font-weight: normal;
+}
+#result{
+width: 800px;
+display: none;
+margin: 10px auto;
+border: 1px solid #8CC02E;
+padding: 10px;
+border-radius: 3px;
+background: #D8FFBE;
+}
+#restable tr th{
+padding: 3px 5px;
+}
+#restable tr td{
+padding: 3px 5px;
+}
+#uploadifive-file_upload{
+margin: 0 auto;
+}
+</style>

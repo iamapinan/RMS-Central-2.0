@@ -1,0 +1,6 @@
+<style type="text/css">
+.view input[type^=text]{
+	width: 200px;
+}
+.label{width: 40%;}
+</style>

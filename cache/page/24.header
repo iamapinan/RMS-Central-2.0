@@ -1,0 +1,106 @@
+<link rel="stylesheet" type="text/css" href="/library/tcal.css"  media="screen"  charset="utf-8"/>
+<link rel="stylesheet" type="text/css" href="/library/plugin/uploadifive/uploadifive.css">
+<script type="text/javascript" src="/library/tcal.js"></script>
+<script type="text/javascript" src="/library/plugin/uploadifive/jquery.uploadifive.min.js"></script>
+
+<script type='text/javascript'>
+var uname
+
+$(function() {
+        uname = document.getElementById('une').value;
+	$('#file_upload').uploadifive({
+	  'uploadScript'      : '/profilesave.php',
+	  'formData'  : {'u':uname,'action':'edit-picture-profile'},
+          'fileType'     : 'image',
+          'method'   : 'post',
+          'fileObjName' : 'Filedata',
+          'buttonText'   : 'เลือกรูปภาพ',
+          'auto'    : true,
+          'dnd'          : true,
+          'fileSizeLimit'   : '2MB',
+          'onUploadComplete'  : function(file, data) {
+              var jsonp = JSON.parse(data);
+              $('#preview_photo').html('<img src="'+jsonp.filename+'">');
+              $('#preview_photo').fadeIn();
+              $('.uploadifive-button').hide();
+              $('#file_uploadQueue').fadeOut();
+              $('.uploadifive-queue').fadeOut();
+              $('.ok').fadeIn();
+          }
+	});
+
+});
+$(document).ready(function() {
+        
+        $(".ok").click(function(){
+	   window.location.href="/my";
+	});
+
+	$('#photo-upload').click(function(){
+	$('#file_upload').uploadifive('upload');
+	});
+});
+
+function profilesave()
+{
+
+        var action=$("#editmyprofile").attr("action");
+             $.post(action, $('#editmyprofile').serialize(true), function(data) {
+                  window.location.href='/edit_profile';
+		}, "json");
+	return false;
+}
+
+function savepassword()
+{
+        var action=$("#changepasswordform").attr("action");
+             $.post(action, $('#changepasswordform').serialize(true), function(data) {
+                 //alert(data.result);
+                  if(data.result=='error')
+                       $('#status-update').slideUp(300).fadeIn(400).html('Sorry, something went wrong. Please check your password.');
+                  if(data.result=='notmatch')
+                       $('#status-update').slideUp(300).fadeIn(400).html('Password is not match');
+                  if(data.result=='wrong')
+                       $('#status-update').slideUp(300).fadeIn(400).html('Old password is incorrect');                  
+                  if(data.result=='success'){
+                       $('#status-update').slideUp(300).fadeIn(400).html('Successfully');
+                       setTimeout(function() { window.location.href='/edit_profile'; }, 2000);
+                  }
+                  $('#status-update').delay(3000).fadeOut(400);
+		}, "json");
+                
+	return false;
+}
+</script>
+<style>
+textarea.edit-header{height: 60px !important;width: 330px;}
+#middleContainer p{margin: 10px 5px;width: 100%;}
+div.label{width: 100px;}
+.icon{color: #368DCD;}
+.edit-body{background: #fcfcfc !important;color: #000 !important;}
+#ContentBody .text-input {
+width: 280px !important;
+}
+div.title{font-size: 14px;font-weight:bold;border-bottom: 1px solid #aaa;}
+#preview_photo{padding: 2px;border: 1px solid #cdcdcd;border-radius: 2px;box-shadow: 0 1px 2px #cccccc;margin: 10px 0px;display: block;height: 84px;width: 84px;}
+div#ContentBody {
+width: 100%;
+min-height: 500px;
+margin-top: 60px;
+background: #FFF;
+display: inline-block;
+border: 1px solid #ccc;
+box-shadow: 2px 2px 4px 0 rgba(12, 12, 12, 0.17);
+text-align: center;
+}
+#boxUI {
+width: 50%;
+padding: 0;
+margin: 10px 0px 5px 240px;
+display: block;
+text-align: center;
+}
+#boxUI p{
+margin-top: 8px;
+}
+</style>

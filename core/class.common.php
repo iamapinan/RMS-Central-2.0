@@ -442,8 +442,9 @@ class common extends profile
 				$uimg = '/user/'.$uif['user'].'/'.$uif['avatar'];
 		$ret = '';
 				if($_SERVER['SCRIPT_NAME']=='/page.php'&&$this->getRole('int')==('08')&&!isset($_GET['edit'])){
+						$pageUrl = explode('?', $_SERVER['REQUEST_URI']);
 						$ret .= '
-						<div class="page_menu"><a href="'.$_SERVER['REQUEST_URI'].'?edit=body" rel="left"><span style="color: #fff;">Edit</span></a></div>
+						<div class="page_menu"><a href="'.$pageUrl[0].'?edit=body" rel="left"><span style="color: #fff;">Edit</span></a></div>
 						';
 					}
 

@@ -1,0 +1,35 @@
+<script type="text/javascript">
+
+$(document).ready(function() {
+
+$("#newpage").submit(function() {	
+var action = $('#newpage').attr('action');
+	
+$.post(action, $('#newpage').serialize(true),function(data) {
+if(data.stat==1)
+{	
+       $('#pagec').html('บันทึกเสร็จแล้ว <a href="'+site_url+'page/'+data.url+'" class="button btGray"> ไปดูผลลัพธ์</a> <p>'+site_url+'page/'+data.url+'</p>');
+} else
+{
+       $('#stat').slideUp(300).fadeIn(400).html('Error');
+}
+}, "json");
+  return false;	
+  });
+
+});
+</script>
+<style>
+textarea.edit-header{height: 150px !important;}
+p{margin: 5px 0;}
+#stat{
+padding: 3px 4px;
+border: 1px solid #1BCF2A;
+background: #E6FFDC;
+margin: 10px 5px;
+display: none;
+border-radius: 3px;
+box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+}
+
+</style>

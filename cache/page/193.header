@@ -1,0 +1,57 @@
+<style type="text/css">
+.lable{
+font-weight:bold;
+padding: 3px 5px;
+}
+.app_title {
+display: inline-block;
+text-align: left;
+vertical-align: top;
+padding-left: 10px;
+}
+.view{
+width: 780px;
+}
+.cblock{margin-left: 180px;}
+.app_photo{
+display: inline-block;
+}
+.post_input{
+display: inline-block;
+width: 380px;
+height: 60px;
+vertical-align: top;
+}
+textarea {
+font-family: Arial, sans-serif;
+}
+</style>
+<script>
+function postme(content_data)
+{
+   var usermas = $('#status_update').val();
+   var postmas = $('#'+content_data).html();
+   var savemas = '<p style="padding: 5px 5px 10px 5px;">'+usermas+'</p>'+postmas;
+   var apps_ref = $('#app_id').val();
+   var send = {'content': savemas}
+   var saveurl = '/save.php?q=apps_post&app_id='+apps_ref;
+   $.post(saveurl, send , function(data) {
+          if(data.update!='false'){
+             $('#mytitle').html('ข้อความของคุณได้ถูกโพสต์ลงบนกระดานสาธารณะเรียบร้อยแล้ว');
+             $('.cblock').html('<p>บันทึกเสร็จแล้ว</p>');
+             setTimeout(function(){
+                self.close();
+             },2000);
+          }
+          else
+          {
+             $('#mytitle').html('ผิดพลาด ไม่สามารถโพสต์ได้ในขณะนี้');
+             $('.cblock').html('<p>บันทึกล้มเหลว</p>');
+             setTimeout(function(){
+                self.close();
+             },2000);
+          }
+         $('#dibt').hide();
+	}, "json");
+}
+</script>

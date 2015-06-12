@@ -1,0 +1,27 @@
+<script language="javascript">
+
+function register(){
+         $.post("https://api.plickers.com/users", $('#signup_frm').serialize(), function( data ) {
+                console.log(data);
+
+               // $.get("/profilesave.php?action=plicker_signup&id="+data.id, function(x){
+               //        console.log(x);
+               //  });
+
+                 var mail = $('#email').val();
+                 var pass = $('#password').val();
+
+                 $.post("https://api.plickers.com/sessions", {email:mail,password:pass}, function(m){
+                       console.log(m);
+                       $.ajax({
+                          url: 'https://api.plickers.com/users/'+m.user,
+                          headers: { 'x-api-version': '1.0.1','x-auth-token':m.token}
+                       }).done(function(){
+                             $('#send-login').attr('src','https://www.plickers.com/signin');
+                       });
+                 });
+                 
+           });
+}
+
+</script>

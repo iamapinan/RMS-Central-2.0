@@ -1,0 +1,56 @@
+<style type="text/css">
+.view{
+padding: 10px 10px 10px 200px;
+line-height: 21px;
+}
+.view p{
+color: #606060;
+}
+.view h2{
+margin-left: 200px;
+}
+.view input[type^=text]
+{
+width: 230px;
+}
+div#ContentBody {
+width: 100%;
+min-height: 500px;
+margin-top: 60px;
+background: #FFF;
+display: inline-block;
+border: 1px solid #CCC;
+box-shadow: 2px 2px 4px 0 rgba(12, 12, 12, 0.17);
+}
+.label{
+vertical-align: top;
+display: inline-block;
+font-weight: bold;
+text-align: left;
+color: #333;
+width: 180px;
+}
+</style>
+<script language="javascript">
+<!--
+$(document).ready(function(){
+
+$('#verify_ac').click(function(){
+	var ctid = $('#ctid').val();
+	var ctzc= $('#ctzc').val();
+	var epcp = $('#epcp').val();
+	if((ctid==''||ctzc=='')||epcp=='')
+	{
+
+		$('#alert_status').show();
+		$('#alert_status .text').html('Please check your data before continue.');
+		return false;
+	}
+	else
+	{
+		$("#verifyme").submit();
+	}
+});
+});
+//-->
+</script>

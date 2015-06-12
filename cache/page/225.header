@@ -1,0 +1,114 @@
+<link rel="stylesheet" type="text/css" href="/library/tcal.css"  media="screen"  charset="utf-8"/>
+<script type="text/javascript" src="/library/tcal.js"></script>
+<style type="text/css">
+<!--
+body{background: #fff !important;}
+span.text-label {
+display: inline-block;
+width: 200px;
+font-weight: bold;
+}
+.data-respon li {
+list-style: none;
+line-height: 23px;
+}
+ul.data-respon {
+width: 550px;
+margin: 10px auto;
+display: block;
+}
+span.resp-text {
+display: inline-block;
+width: 300px;
+color: #666;
+}
+div#ContentBody{margin-top:10px;border:none;}
+.warning{
+display: none;
+color: red;
+padding: 5px;
+width: 380px;
+text-align: center;
+float: right;
+margin: 5px auto 15px auto;
+}
+span.label{width: 250px;margin-right: 10px;float: left;}
+#regisfrm {
+padding: 20px 10px;
+background: white;
+width: 790px;
+margin: 5px auto;
+}
+p.submitbt{
+margin: 10px 0px !important;
+padding: 10px 0px;
+height: auto;
+}
+#regisfrm .text-input{width: 280px  !important;background: #ffffff;}
+#reg_block{
+  width: 700px;
+  display:block;
+}
+.fw{
+  width: auto;
+  display:block;
+}
+#reg_block p{
+  margin: 5px auto;
+}
+.policy{
+  width: 290px;
+  height: 100px;
+  display: block;
+}
+div.title {
+font-size: 19px;
+font-weight: bold;
+border-bottom: 1px solid #AAA;
+padding: 5px;
+text-align: center;
+background: #FEFEFE;
+margin: 10px auto;
+}
+//-->
+</style>
+<script language="javascript">
+function checkexists(e)
+{
+
+var em = $('#'+e).val();
+
+$.post('/social_func.php?g=checktrial&data='+em, '',function(r){
+	if(r.result==1){
+            $('#alert_status').show();
+	           $('#alert_status .text').html('This username is duplicated.');
+            $('#alert_status').delay(3000).fadeOut(400);
+            $('#'+e).val('');
+            $('#'+e).css('border','1px solid #ff5555');
+            return false;
+        }
+        else
+        {
+           $('#'+e).css('border','1px solid #11BB47');
+        }
+}, 'json');
+}
+
+function validmail(e)
+{
+var email = $('#'+e).val();
+var filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+if (filter.test(email)) {
+  $('#'+e).css('border','1px solid #11BB47');
+  return true;
+}
+else
+  {
+     $('#'+e).css('border','1px solid #ff5555');
+     $('#'+e).val('');
+     $('#'+e).focus();
+return false;
+  }
+}
+
+</script>

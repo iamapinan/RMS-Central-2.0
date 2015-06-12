@@ -193,9 +193,6 @@ function SaveBody() {
     var pid = $('input#pageid').val();
 
     $.post('/BodySave.php?saveid=' + pid, $('#editbody').serialize(true), function(data) {
-        $('#stat').slideUp(300).fadeIn(400).html(data);
-        $('#stat').delay(3000).fadeOut(400);
-        $('.preview').fadeIn(500);
     });
 }
 
@@ -302,11 +299,8 @@ $(document).ready(function() {
             if (data.stat == 1) {
                 $('#alert_status').slideUp(300).fadeIn(400).html('Successfully!');
                 $('#alert_status').delay(3000).fadeOut(400);
-                $('.preview').fadeIn();
-                $('iframe#co').show();
-                $('iframe#co').attr('src', '/' + pn);
             } else {
-                $('#alert_status').slideUp(300).fadeIn(400).html('Unsave!');
+                $('#alert_status').slideUp(300).fadeIn(400).html('Save fail!');
                 $('#alert_status').delay(3000).fadeOut(400);
             }
         }, "json");
@@ -343,6 +337,20 @@ function addfriend(friendID) {
     });
 }
 
+function pageTab(tabid){
+    $('.pageobj').hide();
+    switch(tabid){
+        case 'setting':
+            $('#pageConfig').show();
+            break;
+        case 'header':
+            $('#pageHeader').show();
+            break;
+        case 'body':
+            $('#pageBody').show();
+            break;
+    }
+}
 function accept_friend(accept_id) {
     $.ajax({
         'url': '/social_func.php?g=accept&uid=' + accept_id,
