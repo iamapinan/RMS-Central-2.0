@@ -3,3 +3,10 @@ RMS is social base authentication server written in PHP and MySQL.
 This source code is not ready for public and you don't have free to access to the license.
 
 production of version 1.6 is https://rms.bll.in.th
+
+## Creator
+**Apinan Woratrakun**
+
+- <https://twitter.com/iamapinan>
+- <https://facebook.com/9apinan>
+- <https://github.com/iamapinan>
