@@ -119,9 +119,9 @@ class social
 		}
 
 			if($req['avatar']=='')
-				$req['avatar'] = 'holder.js/220x220/random';
+				$req['avatar'] = '/holder.png/180x180/Avatar';
 			else
-				$req['avatar'] = conf('url').'image?width=220&height=220&cropratio=1:1&image=/user/'.$req['user'].'/'.$req['avatar'];
+				$req['avatar'] = conf('url').'image?width=180&height=180&cropratio=1:1&image=/user/'.$req['user'].'/'.$req['avatar'];
 
 		$ret = '<div '.$css.'><img src="'.$req['avatar'].'" alt="'.str_replace('|',' &nbsp;',@$req['fullname']).'">';
 		if(@$m!='home'){
@@ -135,7 +135,7 @@ class social
 		}
 
 		if($get==$i['user']&&$m=='home')
-			$ret .= '<a href="'.conf('url').'edit_profile/action/edit-picture" class="Chimg"><i class="fa fa-camera"></i>  เปลี่ยนรูป</a>';
+			$ret .= '<a href="'.conf('url').'edit_profile/action/edit-picture" class="Chimg"><i class="fa fa-camera"></i></a>';
 		$ret .= '</div>';
 
 		return $ret;

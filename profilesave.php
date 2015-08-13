@@ -156,12 +156,12 @@ if($_REQUEST['action']=='changepassword')
     $iam = UserInfo();
 	if(openssl_encrypt($_REQUEST['currentpassword'], 'aes128', '')==$iam['password']&&$_REQUEST['currentpassword']!=''&&$_REQUEST['newpassword']==$_REQUEST['confirmpassword'])
 	{
-				
+
 				$_REQUEST['newpassword'] = openssl_encrypt($_REQUEST['newpassword'], 'aes128', '');
 				$iSQL = mysql_query('UPDATE '.conf('table_prefix').'_profile SET password="'.$_REQUEST['newpassword'].'",  `update`=0 WHERE user="'.$iam['user'].'"') || die(mysql_error());
 				//for moodle
 				$mdu = MoodleUser();
-              
+
 				if($mdu['username']!='')
 				{
 					mysql_query('UPDATE moodle_user SET password="'.$_REQUEST['confirmpassword'].'" WHERE username="'.$iam['user'].'"') || die(mysql_error());
@@ -194,11 +194,15 @@ if($_REQUEST['action']=='edit-profile')
 			$birthday = $_REQUEST['dd'].'/'.$_REQUEST['mm'].'/'.$_REQUEST['yy'];
 			$language = $_REQUEST['language'];
 			$mobile = $_REQUEST['mobile'];
+			$gender = $_REQUEST['gender'];
+
 			$iam = UserInfo();
 			if($name!='')
 			$set = 'fullname="'.$name.'", ';
 			if($birthday!='')
 			$set .= 'bday="'.$birthday.'", ';
+			if($gender!='')
+			$set .= 'gender="'.$gender.'", ';
 			if($language!='')
 			$set .= 'language="'.$language.'",';
 			if($language!='')

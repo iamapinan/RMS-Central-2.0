@@ -1,8 +1,6 @@
 <?php
 
 include 'initial.min.php';
-include 'crXml.php';
-
 $req = $_REQUEST;
 $user = $_SESSION['loginid']['nickname'];
 $u = UserInfo();
@@ -47,6 +45,40 @@ if(@$req['q']=='delete')
 	echo json_encode($ret); //Return
 }
 
+if($_GET['q']=='stdSetup')
+{
+	$grade = ($_REQUEST['type']=='primary') ? $_REQUEST['grade'] : $_REQUEST['grade']+6;
+
+	$sql = mysql_query('UPDATE '.conf('table_prefix').'_profile SET `grade`='.$grade.', class='.$_REQUEST['class'].' WHERE `ssid`='.$_REQUEST['uid']) || die(mysql_error());
+
+	$sql2 = "INSERT INTO tc_class_register (register_id,class_id,uid,`status`,`timestamp`,role)
+    VALUES (NULL, 'val2','val3','val4')
+        ON DUPLICATE KEY UPDATE open='val3', close='val4';";
+
+	if($sql) echo 1;
+	else echo 0;
+}
+if($_REQUEST['q']=='createClassSession'){
+	//Save Session
+	$data['status'] = 'fail';
+	$data['text'] = '<h2>บันทึกล้มเหลว โปรดลองใหม่</h2>';
+	$datetime = $_REQUEST['sessiondate'].' '.$_REQUEST['sessiontime'];
+	$sessionid = sha1($_REQUEST['courseid'].$datetime);
+	$sj = serialize($_REQUEST['sessioninfo']);
+	$atv = serialize($_REQUEST['sessionactivite']);
+	
+	$query = "INSERT INTO tc_class_session (sessionid,course_id,class_id,subject,activity,datetime,timestamp) VALUES('$sessionid',".$_REQUEST['courseid'].",".$_REQUEST['classid'].",'$sj','$atv','$datetime',".time().")";
+	$save = mysql_query($query);
+	if($save){
+		$data['id'] = $sessionid;
+		$data['status'] = 'true';
+		$data['text'] = '<h2>บันทึกเรียบร้อยแล้ว</h2>';
+		
+	}
+	header('Content-Type: application/json');
+	echo json_encode($data);
+}
+
 if($_POST['q']=='settings')
 {
 	if($_POST['tp'] == 'verify') $chg = 'auto_verify';
@@ -61,6 +93,141 @@ if($_POST['q']=='settings')
 	$sql  =mysql_query('UPDATE '.conf('table_prefix').'_config SET `value`='.$_POST['set'].' WHERE `name`="'.$chg.'"') || die(mysql_error());
 }
 
+if($req['q']=='ccs'){
+	$coursedata = CourseInfo($_POST['courseid']);
+	$_POST['courseCls'] = $coursedata['class_id'].','.$_POST['courseCls'];
+	$sql = mysql_query('UPDATE '.conf('table_prefix').'_course SET `class_id`="'.$_POST['courseCls'].'" WHERE `course_id`='.$_POST['courseid']);
+
+	if($sql)
+		echo 1;
+	else
+	    echo 0;
+}
+if($req['q']=='replysave'){
+	/*
+	 *	`cid` INT(15) NOT NULL AUTO_INCREMENT,
+	 *	`uid` INT(15) NOT NULL,
+	 *	`bid` INT(15) NULL DEFAULT NULL,
+	 *	`msg` VARCHAR(1000) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
+	 *	`file` VARCHAR(200) NULL DEFAULT NULL,
+	 *	`timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	 *	`show` INT(15) NOT NULL DEFAULT '0',
+	 *	`status` INT(15) NULL DEFAULT '0',
+	 */
+	if($req['pid']==''){
+		echo 0;
+		exit;
+	}
+	$postdata = getsubject($req['pid']);
+	$filepath = '';
+	if($_FILES['replyFile']['name']!=''){
+		$fex = explode('/', $_FILES['replyFile']['type']);
+		$extension = $fex[1];
+		if($extension=='jpeg'||$extension=='JPEG') $extension = 'jpg';
+		$newfilename = md5(rand()).'_'.time().'.'.$extension;
+		$savesource = conf('dir').'data/content/'.$postdata['section'].'/'.$postdata['ref'].'/'.$newfilename;
+		if(copy($_FILES['replyFile']['tmp_name'], $savesource)){
+			$filepath = '/data/content/'.$postdata['section'].'/'.$postdata['ref'].'/'.$newfilename;
+		}
+	}
+	
+	$replySQL = "INSERT INTO tc_comment (cid,uid,bid,msg,file,timestamp) VALUES(NULL, ".$client['ssid'].",
+	".$req['pid'].",'".$req['msg']."','$filepath',".time().")";
+	$savereply = mysql_query($replySQL);
+	if($savereply){
+		echo 1;
+		exit;
+	}else{
+		echo 0;
+		exit;
+	}
+}
+if($req['q']=='remove_reply'){
+	mysql_query("DELETE FROM tc_comment WHERE cid=".$req['id']);	
+}
+//pointToreply
+if($req['q']=='pointToreply'){
+	mysql_query("UPDATE tc_comment SET status=1 WHERE cid=".$req['id']);	
+}
+if($req['q']=='uncc'){
+	$coursedata = CourseInfo($_POST['course']);
+	$_POST['class'] = str_replace(','.$_POST['class'], '', $coursedata['class_id']);
+	$sql = mysql_query('UPDATE '.conf('table_prefix').'_course SET `class_id`="'.$_POST['class'].'" WHERE `course_id`='.$_POST['course']);
+
+	if($sql)
+		echo 1;
+	else
+	    echo 0;
+}
+if($req['q']=='userpost'){
+
+	if($req['section']!=''){
+		$rndid = md5(time().rand());
+		$fex = explode('/', $_FILES['postfile']['type']);
+		$ext = $fex[1];
+		if($ext=='jpeg'||$ext=='JPEG') $ext = 'jpg';
+		if($ext!='')
+			$filename = $rndid.'.'.$ext;
+		else
+			$filename = '';
+		if(!is_dir(conf('contents').$req['section'])) mkdir(conf('contents').$req['section']);
+		if(!is_dir(conf('contents').$req['section'].'/'.$req['ref'])) mkdir(conf('contents').$req['section'].'/'.$req['ref']);
+		copy($_FILES['postfile']['tmp_name'], conf('contents').$req['section'].'/'.$req['ref'].'/'.$rndid.'.'.$ext);
+
+		$insertToDb = mysql_query("INSERT INTO tc_subject (bid,response_need,username,subject,req_id,ref,section,file,filetype,timestamp)
+		VALUES(NULL, ".$req['response'].",'".$client['user']."','".mysql_real_escape_string($req['msg'])."','".$rndid."','".$req['ref']."','".$req['section']."','".$filename."','".$ext."',".time().")");
+		if($insertToDb)
+		{
+			$res['status'] = 'success';
+		}
+		else
+			$res['status'] = 'fail';
+
+		header('Content-Type: application/json');
+		echo json_encode($res);
+	}
+}
+if($req['q']=='ces'){
+	$cat  = ($_POST['group']=='') ? '' : "main_group='".$_POST['group']."',";
+
+	$image = '';
+    $destination = conf('root') . '/user/'.$_SESSION['loginid']['nickname'].'/';
+    $fileinfo = explode('/',$_FILES['course_image']['type']);
+    $new_image_name = md5($_FILES['course_image']['name']).'.'.$fileinfo[1];
+    $upload = move_uploaded_file($_FILES['course_image']['tmp_name'], $destination.$new_image_name);
+
+    if($upload) $image = "img='/user/".$_SESSION['loginid']['nickname']."/".$new_image_name."',";
+
+	$sql = mysql_query("UPDATE ".conf('table_prefix')."_course SET `cname`='".$_POST['cn']."',
+		cdetail='".$_POST['dtail']."', ".$image." ".$cat." alternet_teacher_id='".json_encode($_POST['member_group'])."'
+		WHERE `course_id`=".$_POST['courseid']) || die(mysql_error());
+
+	if($sql){
+		echo 1;
+	}
+	else
+	    echo 0;
+
+}
+
+if($req['q']=='stds'){
+	//Reset
+	mysql_query('DELETE FROM tc_class_register WHERE `class_id`='.$_POST['clsid'].' AND role=1');
+
+	$sql_register = "insert into tc_class_register (`register_id`,`class_id`,`uid`,`status`,`timestamp`, `role`) values";
+    $member_count = count($_REQUEST['member_group']);
+    for($s = 0;$s<$member_count;$s++)
+    {
+        $sql_register .= "(NULL, ".$_POST['clsid'].", ".$_REQUEST['member_group'][$s].",1,".time().",1)";
+
+        if($s==($member_count-1)) $sql_register .= ';';
+        else $sql_register .= ',';
+    }
+    //echo $sql_register;
+    $q2 = mysql_query($sql_register) || die(mysql_error());
+    if($q2) echo 1;
+    else echo 0;
+}
 //status_update
 if(@$req['q']=='status_update')
 {
@@ -133,21 +300,23 @@ if(@$req['q']=='like')
 
 if($req['action']=='upload_user_list')
 {
-	$ret['success'] = 1;
+	ini_set('display_errors', '1');
+	ini_set("memory_limit","12M");
+//error_reporting(E_ALL);
+	include 'core/simplexlsx.class.php';
+	$ret['success'] = 0;
 	$key = $p->randomstr(15);
 	$tempFile = $_FILES['Filedata']['tmp_name'];
 	$fin = pathinfo($_FILES['Filedata']['name']);
 	$save_path = conf('dir').'temp/'.$key.'.'.$fin['extension'];
 	move_uploaded_file($tempFile,$save_path);
-	$user_data = excel_reader($key.'.'.$fin['extension']);
+	$user_data = new SimpleXLSX($save_path);
+	$counting = count($user_data->rows());
 
-	if($user_data!=false&&$user_data['title'][1]=='fullname')
-	{
-
-		$qr = 'INSERT INTO '.conf('table_prefix').'_profile (`user`, `provider`, `password`,  `fullname`, `email`, `role`, `org`, `gender`, `language`, `bday`, `mobile`, `grade`, `class`, `position`, `status`, `verify`, `update`, `admin`, `citizen_id`, `amid`) VALUES';
-		if(count($user_data['body'])>=1)
+		$qr = 'INSERT INTO '.conf('table_prefix').'_profile (`user`, `provider`, `password`,  `fullname`, `email`, `role`, `org`, `gender`, `language`, `bday`, `mobile`, `grade`, `class`, `position`, `status`, `verify`, `update`, `admin`, `citizen_id`) VALUES';
+		if($counting>=1)
 		{
-			for($m==1;$m<=count($user_data['body'])-1;$m++)
+			for($m==1;$m<=$counting-1;$m++)
 			{
 				include_once('core/class.am.php');
 				$idm = new IDM2API;
@@ -156,24 +325,26 @@ if($req['action']=='upload_user_list')
 				{
 					$idm->debug = 1;
 				}
-				$callam = $idm->create_user($user_data['body'][$m][11], $user_data['body'][$m][3], str_replace(' ', '|', $user_data['body'][$m][1]), $user_data['body'][$m][4], conf('schoolid')); //Call to API
 
-				//$arr[$m]['degug'] = $idm->idm_debug();
-				$arr[$m]['name'] = $user_data['body'][$m][1];
-				$arr[$m]['user'] = $user_data['body'][$m][11];
-				$arr[$m]['email'] = $user_data['body'][$m][2];
-				$arr[$m]['password'] = $user_data['body'][$m][3];
+				$arr[$m]['name'] = str_replace(' ', '|', $user_data->rows()[$m][0]);
+				$arr[$m]['user'] = $user_data->rows()[$m][10];
+				$arr[$m]['email'] = $user_data->rows()[$m][1];
+				$arr[$m]['password'] = $user_data->rows()[$m][2];
 				$arr[$m]['status'] = 1;
-				$user_data['body'][$m][1] = str_replace(' ', '|', $user_data['body'][$m][1]);
-				$chkdb = UserInfo($user_data['body'][$m][11]);
-				if($chkdb['user']!='') continue;
-				if($user_data['body'][$m][2]=='') continue;
+				//Create Aculearn Account
+				//$callam = $idm->create_user($arr[$m]['user'], $arr[$m]['password'], $arr[$m]['name'], $user_data->rows()[$m][3], conf('orgid')); //Call to API
 
+				$chkdb = UserInfo($user_data->rows()[$m][10]);
+				if($chkdb['user']!='') continue;
+				if($user_data->rows()[$m][10]=='') continue;
+			//Query
 				$qr .= '
-				("'.$user_data['body'][$m][11].'","bll","'.openssl_encrypt($user_data['body'][$m][3], 'aes128', '').'","'.$user_data['body'][$m][1].'","'.$user_data['body'][$m][2].'",'.$user_data['body'][$m][4].',"'.conf('orgid').'","'.$user_data['body'][$m][10].'","th","'.$user_data['body'][$m][7].'","'.$user_data['body'][$m][9].'",'.$user_data['body'][$m][5].','.$user_data['body'][$m][6].',"'.$user_data['body'][$m][8].'",1,1,0,'.$user_data['body'][$m][12].',"'.$user_data['body'][$m][11].'","'.$amid.'")';
-				if($m<count($user_data['body'])-1) $qr .= ',';
+				("'.$arr[$m]['user'].'","rms","'.openssl_encrypt($user_data->rows()[$m][2], 'aes128', '').'","'.$arr[$m]['name'].'","'.$arr[$m]['email'].'",'.$user_data->rows()[$m][3].',"'.conf('orgid').'","'.$user_data->rows()[$m][9].'","th","'.$user_data->rows()[$m][6].'","'.$user_data->rows()[$m][8].'","'.$user_data->rows()[$m][4].'","'.$user_data->rows()[$m][5].'","'.$user_data->rows()[$m][7].'",1,1,0,'.$user_data->rows()[$m][11].',"'.$user_data->rows()[$m][10].'")';
+
+				if($m<count($user_data->rows())-1) $qr .= ','; else $qr .= ';';
 			}
 		}
+
 		$query = mysql_query($qr);
 
 		if($query){
@@ -181,7 +352,7 @@ if($req['action']=='upload_user_list')
 			$ret['maxuser'] = count($user_data['body'])-1;
 			$ret['user'] = $arr;
 		}
-	}
+
 	echo json_encode($ret);
 }
 
@@ -204,7 +375,7 @@ if($req['action']=='userbanner')
 	else
 	{
 		$ims = getimagesize($tempFile);
-		if($ims[0]>=1024&&$ims[1]>=220)
+		if($ims[0]>=980&&$ims[1]>=220)
 		{
 			if($extentsion=='jpg'||$extentsion=='png'||$extentsion=='bmp')
 			{
@@ -254,7 +425,7 @@ if($req['action']=='userbanner')
 		}else
 		{
 			$ret['error'] = 2;
-			$ret['msg'] = 'ขนาดไฟล์เล็กเกินไป ขนาดไฟล์ควรมีความกว้าง 1024px สูง 220px ขึ้นไป';
+			$ret['msg'] = 'ขนาดไฟล์เล็กเกินไป ขนาดไฟล์ควรมีความกว้าง 980px สูง 220px ขึ้นไป';
 			echo json_encode($ret);
 			exit(0);
 		}
@@ -314,9 +485,11 @@ if(@$req['q']=='blog')
 
 			if($image_count>=1)
 			{
-				$ImageInfo = pathinfo($image[0]);
-				$imagex = 'image.'.$ImageInfo['extension'];
-				if(!copy($image[0], $contents_path.'/'.$imagex)) $imagex = '';
+				$imagex = 'image.jpg';
+				$imgsrc = pathinfo($image[0]);
+				if(!copy($image[0], $contents_path.'/'.$imagex)){
+					copy(__DIR__.str_replace('/','\\',$image[0]), $contents_path.'/'.$imagex);
+				}
 			}
 
 			$styling = '<link rel="stylesheet" type="text/css" href="/library/blogstyle.css" charset="utf-8"/>';
@@ -466,14 +639,14 @@ if($_REQUEST['q']=='classroom_initial_insert')
     }
     $stype = mysql_query("select * from tc_school_type where `stid` = ".$_REQUEST['schooltype']);
     $stype_data = mysql_fetch_array($stype);
-    
+
     $initial_command = "insert into tc_classroom (`clsid`, `grade`, `cls_number`, `sid`, `uid`, `title`, `class_type`, `auto_approved`) values";
     for($c = $stype_data['min_grade'];$c<=$stype_data['max_grade'];$c++){
         for($n=1;$n<=$_REQUEST['class_'.$c];$n++){
-        
+
             if($c<=6) $class_title = 'ประถมศึกษา '.$c.'/'.$n;
             if($c>=7&&$c<=12) $class_title = 'มัธยมศึกษาปีที่ '.($c-6).'/'.$n;
-            
+
             $initial_command .= "(NULL, $c, $n, ".$u['org'].", ".$u['ssid'].", '$class_title', 'standard', 0)";
             if($c==$stype_data['max_grade']&&$n==$_REQUEST['class_'.$c]) $initial_command .= ';';
             else $initial_command .= ',';
@@ -483,7 +656,7 @@ if($_REQUEST['q']=='classroom_initial_insert')
     $set_school = "update tc_school set `stype` = ".$stype_data['stid']." where `sid`=".$u['org'];
     $q1 = mysql_query($initial_command);
     $q2 = mysql_query($set_school);
-    
+
     //Classroom register
     $std_info = mysql_query("select `class`, `grade`, `org`, `ssid` from tc_profile where `org`=".$u['org']." and (`role`=2 or `role`=3)");
     $sql_register = "insert into tc_class_register (`register_id`,`class_id`,`uid`,`status`,`timestamp`) values";
@@ -491,24 +664,24 @@ if($_REQUEST['q']=='classroom_initial_insert')
     $num = mysql_num_rows($std_info);
     while($std_data = mysql_fetch_array($std_info)){
 
-        
+
         $cls_info = mysql_fetch_array(mysql_query("select `clsid` from tc_classroom where `sid`=".$std_data['org']." and `grade`=".$std_data['grade']." and `cls_number`=".$std_data['class']));
 
-        
+
         $sql_register .= "(NULL, ".$cls_info['clsid'].", ".$std_data['ssid'].",1,".time().")";
-        
+
         if($s==$num) $sql_register .= ';';
         else $sql_register .= ',';
-        
+
     }
     //echo $sql_register;
     $q3 = mysql_query($sql_register);
-   
+
    if($q1&&$q2)
         echo '<META HTTP-EQUIV="Refresh" CONTENT="0;URL=/profile/'.$u['user'].'?user=class">';
     else
         echo '<META HTTP-EQUIV="Refresh" CONTENT="0;URL=/profile/'.$u['user'].'?user=class&error=save_fail">';
-    
+
 }
 
 if($_REQUEST['q']=='classroom_single_insert')
@@ -519,18 +692,18 @@ if($_REQUEST['q']=='classroom_single_insert')
     $fileinfo = explode('/',$_FILES['class_image']['type']);
     $new_image_name = md5($_FILES['class_image']['name']).'.'.$fileinfo[1];
     $upload = move_uploaded_file($_FILES['class_image']['tmp_name'], $destination.$new_image_name);
-    
+
     if($upload) $image = '/user/'.$_SESSION['loginid']['nickname'].'/'.$new_image_name;
     else echo '<br>Upload fail '.$new_image_name;
-    
-    //request data = allow_public, class_name, class_detail, class_image, 
+
+    //request data = allow_public, class_name, class_detail, class_image,
     //Build Query
 
     //create classroom
     $initial_command = "insert into tc_classroom (`clsid`, `grade`, `cls_number`, `sid`, `uid`, `title`,`detail`, `class_type`, `image`, `auto_approved`, `public`, `teacher`) values";
-     
+
     $initial_command .= "(NULL, 0, 0, ".$u['org'].", ".$u['ssid'].", '".mysql_real_escape_string($_REQUEST['class_name'])."', '".mysql_real_escape_string($_REQUEST['class_detail'])."', 'special', '$image', 0, ".$_REQUEST['allow_public'].", '".json_encode($_REQUEST['member_group'])."');";
-    
+
     //echo $initial_command;
     $q1 = mysql_query($initial_command);
     $insertid = mysql_insert_id();
@@ -540,13 +713,13 @@ if($_REQUEST['q']=='classroom_single_insert')
     {
         //echo $_REQUEST['member_group'][$s];
         $sql_register .= "(NULL, $insertid, ".$_REQUEST['member_group'][$s].",1,".time().",2)";
-        
+
         if($s==($member_count-1)) $sql_register .= ';';
         else $sql_register .= ',';
     }
     //echo $sql_register;
     $q2 = mysql_query($sql_register);
-    
+
     if($q1&&$q2){
         echo '<META HTTP-EQUIV="Refresh" CONTENT="2;URL=/profile/'.$u['user'].'?user=class">';
         echo '<br>Succcess';
@@ -580,7 +753,7 @@ if($_REQUEST['q']=='group_single_insert')
 
     //Build Query
 	$sid = ($_POST['group_type']==1) ? 'NULL' : $client['org'];
-	$strSQL = "INSERT INTO `tc_social_group`(`sgid`, `name`, `logo`, `url`, `timestamp`, `sid`, `admin`, `auto_approved`, `banner`, `type`) 
+	$strSQL = "INSERT INTO `tc_social_group`(`sgid`, `name`, `logo`, `url`, `timestamp`, `sid`, `admin`, `auto_approved`, `banner`, `type`)
 	VALUES (NULL,'".mysql_real_escape_string($_POST['group_name'])."','$image','".substr(md5($_POST['group_name']),0,10)."','".time()."',$sid,'".$client['user']."',
 		".$_POST['allow_public'].",NULL,".$_POST['group_type'].")";
 
@@ -593,14 +766,14 @@ if($_REQUEST['q']=='group_single_insert')
     {
         //echo $_REQUEST['member_group'][$s];
         $sql_register .= "($insertid, ".$_REQUEST['member_group'][$s].",1,".time().",NULL, 1)";
-        
+
         if($s==($member_count-1)) $sql_register .= ';';
         else $sql_register .= ',';
     }
- 
+
     $q2 = mysql_query($sql_register);
 
-    
+
     if($query){
         echo '<META HTTP-EQUIV="Refresh" CONTENT="2;URL=/profile/'.$u['user'].'?user=group">';
         echo 'Success';
@@ -620,19 +793,19 @@ if($_REQUEST['q']=='course_save')
     $fileinfo = explode('/',$_FILES['course_image']['type']);
     $new_image_name = md5($_FILES['course_image']['name']).'.'.$fileinfo[1];
     $upload = move_uploaded_file($_FILES['course_image']['tmp_name'], $destination.$new_image_name);
-    
+
     if($upload) $image = '/user/'.$_SESSION['loginid']['nickname'].'/'.$new_image_name;
     else echo '<br>Upload fail '.$new_image_name;
     $_REQUEST['group'] = ($_REQUEST['group']=='') ? 'NULL' : $_REQUEST['group'];
     $_REQUEST['grade'] = ($_REQUEST['grade']=='') ? 'NULL' : $_REQUEST['grade'];
-    
+
     $sqlcode = "INSERT INTO tc_course (course_id, uid, cname, cdetail, img, sid, type, public, main_group, alternet_teacher_id,class_id) VALUES
     (NULL, ".$u['ssid'].", '".$_REQUEST['course_name']."','".mysql_real_escape_string($_REQUEST['course_detail'])."',
     '".$image."',".$u['org'].",'".$_REQUEST['course_type']."',".$_REQUEST['allow_public'].",".$_REQUEST['group'].",'".json_encode($_POST['member_group'])."','".$_POST['grade']."');";
-  
-    
+
+
     $query = mysql_query($sqlcode) || die(mysql_error());
-    
+
     $insertid = mysql_insert_id();
     $sql_register = "INSERT INTO `tc_course_register`(`course_id`, `uid`, `status`, `timestamp`, `role`, `id`) VALUES";
     $member_count = count($_REQUEST['member_group']);
@@ -640,11 +813,11 @@ if($_REQUEST['q']=='course_save')
     {
         //echo $_REQUEST['member_group'][$s];
         $sql_register .= "($insertid, ".$_REQUEST['member_group'][$s].",1,".time().", 2,NULL)";
-        
+
         if($s==($member_count-1)) $sql_register .= ';';
         else $sql_register .= ',';
     }
- 
+
     $q2 = mysql_query($sql_register);
 
     if($query){
@@ -655,7 +828,7 @@ if($_REQUEST['q']=='course_save')
         echo '<META HTTP-EQUIV="Refresh" CONTENT="2;URL=/profile/'.$u['user'].'?user=course&error=save_fail">';
         echo 'fail';
     }
-    
+
 }
 
 ?>

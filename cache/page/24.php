@@ -113,12 +113,19 @@ echo '<option>ปี ค.ศ.</option>';
 		if($bd[2]==$y) $actvated = 'selected'; else $actvated = '';
 		echo '<option value="'.$y.'" '.$actvated.'>'.$y.'</option>';
 	}echo '</select>';
-
+if($u['gender']=='m') $gender['m']='selected';
+else $gender['f'] = 'selected';
+		
 echo '</span></p>
 <p><span class="label">&nbsp;</span> ลบ พ.ศ. ด้วย 543 เพื่อให้เป็น ค.ศ. </p>
 <p><span class="label">ภาษา</span> <select name="language">
 <option value="th" '.@$th.'>'.$lang['th'].'</option>
 <option value="en" '.@$en.'>'.$lang['en'].'</option>
+</select>
+</p>
+<p><span class="label">เพศ</span> <select name="gender">
+<option value="m" '.$gender['m'].'>ชาย</option>
+<option value="f" '.$gender['f'].'>หญิง</option>
 </select>
 </p>
 <p><span class="label">อีเมล์</span> <input type="text" class="text-input" name="email" value="'.$u['email'].'"></p>

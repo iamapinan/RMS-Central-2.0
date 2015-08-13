@@ -30,9 +30,18 @@
 				<div class="frm-group">
 					<p class="title">กำหนดครูประจำชั้น <sup class="text-red">บังคับ</sup></p>
 					<p class="frm-obj menulist">
-					<input type="text" class="text-input" name="group_member_check" id="idCheck" required placeholder="ป้อนชื่อแล้วเลือกจากรายการ">
+					<input type="text" class="text-input" name="group_member_check" id="idCheck" placeholder="ป้อนชื่อแล้วเลือกจากรายการ">
 					<ul class="uls hidden"></ul></p>
-					<div class="member-list"></div>
+					<div class="member-list">
+					<?php
+						$img = ($client['avatar']!='') ? '/user/'.$client['user'].'/'.$client['avatar'] : '';
+					?>
+					<span class="member_selected" id="member-id-<?php echo $client['ssid'];?>">
+						<input type="hidden" name="member_group[]" value="<?php echo $client['ssid'];?>">
+						<img src="<?php echo image_resize($img, 26, 26);?>" class="inlinepos"> 
+						<?php echo str_replace('|',' ',$client['fullname']);?>    
+					</span>
+					</div>
 				</div>
 				<div class="frm-group">
 					<p class="title">ภาพประกอบ</p>

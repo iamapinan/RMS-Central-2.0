@@ -29,7 +29,7 @@ if(isset($_POST))
 
 	if($userinfo['password']==openssl_encrypt($_REQUEST['password'], 'aes128', ''))
 	{
-
+		
 		if($userinfo['school']=='') $userinfo['school']='0000000001';
 			$info = array(
 			'fullname'=>$userinfo['fullname'],
@@ -37,17 +37,18 @@ if(isset($_POST))
 			'email'=>$userinfo['email']
 			);
 
-		$sql_school = mysql_query('select * from '.conf('table_prefix').'_school where sid='.$userinfo['org']);
+		$sql_school = mysql_query('select sname from '.conf('table_prefix').'_school where sid='.$userinfo['org']);
 		$school = mysql_fetch_array($sql_school);
-
+		
+		if(conf('domain')!='rms.local.io'){
 		include_once('core/class.am.php');
 		$idm = new IDM2API;
 		$chkg = $idm->check_group($userinfo['org']);
-
+		
 		if($chkg==false) $add = $idm->add_group($userinfo['org'], $school['sname']);
-
+	
 		$idm->create_user($userinfo['user'], openssl_decrypt($userinfo['password'], 'aes128', ''), str_replace(' ','',$userinfo['fullname']), $userinfo['role'], $userinfo['org']);
-
+		}
 
 		setcookie('userid', base64_encode($userinfo['user']),time()+378432000);
 
@@ -59,13 +60,13 @@ if(isset($_POST))
 		if(isset($_REQUEST['client'])&&($_REQUEST['client']=='android'||$_REQUEST['client']=='pc'))
 		{
 			if($_POST['callback_to']!=''){
-				header('Refresh: 2; '.$_POST['callback_to']);
+				header('Refresh: 1; '.$_POST['callback_to']);
 			}
 			else{
 				if(isset($_SESSION['redirect_to']))
-					header('Refresh: 2; '.$_SESSION['redirect_to'].'?auth='.$userinfo['user']);
+					header('Refresh: 1; '.$_SESSION['redirect_to'].'?auth='.$userinfo['user']);
 				else
-					header('Refresh: 2; /my');
+					header('Refresh: 1; /my');
 					echo 'Redirecting...';
 			}
 		}

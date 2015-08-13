@@ -3,7 +3,7 @@
 #
 # Set some options.
 
-Options +FollowSymLinks
+Options +FollowSymLinks -Indexes
 Order allow,deny
 Allow from all
 DirectoryIndex index.php
@@ -14,4 +14,9 @@ RewriteEngine on
 RewriteBase /clicker/
 
 RewriteRule ^session$ index.php [L]
+RewriteRule ^holder\.(.*)/(.*)/(.*)/(.*)/(.*)$ module/dig/image.php?file_format=$1&size=$2&text=$3&bg_color=$4&fg_color=$5 [QSA,L]
+RewriteRule ^holder\.(.*)/(.*)/(.*)$ module/dig/image.php?file_format=$1&size=$2&text=$3 [QSA,L]
+RewriteRule ^holder\.(.*)/(.*)$ module/dig/image.php?file_format=$1&size=$2 [QSA,L]
+RewriteRule ^holder\.(.*)$ module/dig/image.php?file_format=$1 [QSA,L]
+RewriteRule ^get/(.*)$ res.php$1 [QSA,L]
 </IfModule>

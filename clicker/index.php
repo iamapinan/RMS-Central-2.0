@@ -1,14 +1,50 @@
 <?php
 include('startup.php');
 
-
-
-	$online = new libs\OnlineDetect;
-	$student['count'] = 2;//count($course->cdp['student']);
-	
-	//print_r($http->request());
 	$SReq = @$http->get()->q;
-	if($SReq=='') $SReq = $config['hometab'];
+	if(!isset($http->get()->return_type)){
+
+		$online = new libs\OnlineDetect;
+		$student['count'] = @count($course->cdp['student']);
+
+		if(!isset($http->request()->sessionid)){
+			$sessionid = $course->createSession($http->courseId());
+		}
+		else{
+			//Activate last session.
+			$db->query("UPDATE session SET status=0");
+			$db->query("UPDATE session SET status=1 WHERE session_id='".$http->request()->sessionid."'");
+			if(empty($http->get()->q)) $course->courseSync();
+			$sessionid = $course->createSession($http->courseId());
+
+		}
+
+		if(!isset($http->get()->sessionid))
+		{
+			header('location: '.$_SERVER['REQUEST_URI'].'&sessionid='.$sessionid->session);
+			exit;
+		}
+		$sessionif = $course->sessionInfo($sessionid->session);
+		if($SReq=='') $SReq = $config['hometab'];
+	}else{
+		if($http->get()->return_type=='json'){
+				$ses = $course->sessionInfo($http->get()->sessionid);
+				$sf = $course->courseFiles($http->get()->sessionid);
+				$fc = count($sf);
+				$courseconfig = $course->getCourseConfig($http->courseId(), 'course_text');
+				$jsondata['course_name'] = $courseconfig;
+				$jsondata['course_file_dir'] = $config['address'].$config['install_path'].$course->coursedir.'/files/';
+				$jsondata['session_id'] = $http->get()->sessionid;
+				$jsondata['session_time'] = date('d/n/Y, H:i', $ses['timestamp']);
+				$jsondata['file_count'] = $fc;
+				$jsondata['files'] = $sf;
+				header('Content-Type: application/json');
+				echo json_encode($jsondata);
+				exit;
+		}
+	}
+	
+	
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -16,16 +52,31 @@ include('startup.php');
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-		<title><?php echo $course->cdp['cname'];?></title>
+		<title><?php echo @$course->cdp['cname'];?></title>
 		<link href="include/bootstrap/css/bootstrap.css" rel="stylesheet">
 		<link href="include/custome.css" rel="stylesheet">
+		<link href="include/Hover/css/hover-min.css" rel="stylesheet"  media="all">
 		<link href="include/font-awesome/css/font-awesome.min.css" rel="stylesheet">
 		<script src="include/jquery-1.11.2.min.js"></script>
 		<script src="include/bootstrap/js/bootstrap.js"></script>
 		<script src="include/script.js"></script>
-		<script src="holder.js"></script>
+
 	</head>
 	<body>
+	<div class="modal fade x-modal-lg" id="clickermodal" tabindex="-1" role="dialog" aria-labelledby="ModalLabel">
+	  <div class="modal-dialog modal-lg">
+	    <div class="modal-content">
+	    	<div class="modal-header">
+        		<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+        		</button>
+        		<h4 class="modal-title"></h4>
+      		</div>
+      		<div class="modal-body"></div>
+	    </div>
+	  </div>
+	</div>
+		<?php if(isset($http->get()->return_type)){ include('template/'.$SReq.'.php'); exit; }?>
+		<?php if($SReq==='end'){ include('template/'.$SReq.'.php'); exit; }?>
 		<nav class="navbar navbar-default navbar-static-top">
 			<div class="container-fluid ">
 				<div class="navbar-header">
@@ -56,8 +107,18 @@ include('startup.php');
       					<li <?php if($SReq=='configs') echo 'class="active"';?>>
       						<a href="<?php echo $http->currents('crs').'&q=configs';?>"><i class="fa fa-gear"></i>  ตั้งค่า</a>
       					</li>
+      					<!--
+      					<li <?php if($SReq=='configs') echo 'class="active"';?>>
+      						<a href="#"><i class="fa fa-gear"></i>  AcConference</a>
+      					</li>
+      					<li <?php if($SReq=='configs') echo 'class="active"';?>>
+      						<a href="#"><i class="fa fa-gear"></i>  Plicker</a>
+      					</li>
+      					-->
       				</ul>
-      				<button type="button" class="btn btn-danger navbar-btn navbar-right">เลิกเรียน <i class="fa fa-sign-out"></i></button>
+
+      				<button type="button" class="btn btn-danger navbar-btn navbar-right" onclick="window.location.href='<?php echo $http->currents('crs').'&q=end';?>'">เลิกเรียน <i class="fa fa-sign-out"></i></button>
+      				<span class="navbar-right session_count"><i class="fa fa-clock-o"></i> สร้างเมื่อ: <?php echo date('D d F Y - H:i', $sessionif['timestamp']);?></span>
       			</div>
 			</div>
 		</nav>

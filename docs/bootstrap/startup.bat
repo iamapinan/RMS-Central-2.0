@@ -1,5 +1,5 @@
 @Echo off
-echo "Starting..."
+echo Starting...
 d:
 cd D:\xampp\htdocs\rms\docs\bootstrap
 

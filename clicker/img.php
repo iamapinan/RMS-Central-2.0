@@ -1,5 +1,6 @@
 <?php
 ini_set('allow_url_fopen',true);
+ini_set('memory_limit', 256);
 header('Access-Control-Allow-Origin: *');
 //Copy external link image to cahce folder.
 function cache_image($img)

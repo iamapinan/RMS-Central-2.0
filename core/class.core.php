@@ -8,24 +8,6 @@ class core extends common{
 		return $exec;
 	}
 
-	function iplocation($ip){
-	$ch = curl_init();
-	$data = array('query' => $ip);
-	curl_setopt($ch, CURLOPT_URL, 'http://www.iplocation.net/tools/ip-locator.php');
-	curl_setopt($ch, CURLOPT_POST, 1);
-	curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
-	curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-
-	$x = curl_exec($ch);
-	$replace = str_replace("src='/tools/ip2location/flags","@CUT@",$x);
-	$string = explode("@CUT@",$replace);
-	$getCity = explode("</td><td>",$string[1]);
-		//print_r($getCity);
-	$return['city'] = $getCity[2];
-	$return['country'] = $getCity[count($getCity)-1];
-
-	return $return;
-	}
 
 	public function sendmail($t,$s,$b)
 	{
@@ -123,14 +105,14 @@ function relativeTime($timestamp){
 
     $difference = time() - $timestamp;
         // Customize in your own language.
-    $periods = array( "Sec", "Min", "Hr", "Day", "Week", "Month", "Year", "Decade" );
+    $periods = array( "วินาที", "นาที", "ชั่วโมง", "วัน", "สัปดาห์", "เดือน", "ปี", "ทตศวรรษ" );
     $lengths = array( "60","60","24","7","4.35","12","10");
 
     if ($difference > 0) { // this was in the past
-        $ending = "";
+        $ending = "ที่แล้ว";
     }else { // this was in the future
         $difference = -$difference;
-        $ending = "";
+        $ending = "ที่แล้ว";
     }
     for( $j=0; $difference>=$lengths[$j] and $j < 7; $j++ )
         $difference /= $lengths[$j];
@@ -139,7 +121,7 @@ function relativeTime($timestamp){
                 // Also change this if needed for an other language
         $periods[$j].= "";
     }
-    $text = 'On '.$difference.' '.$periods[$j].$ending;
+    $text = 'ประมาณ '.$difference.' '.$periods[$j].$ending;
 
     return $text;
 }

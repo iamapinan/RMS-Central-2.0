@@ -50,4 +50,6 @@ $conf['idm-server'] = '106.0.176.33';
 $conf['api_server'] = 'http://rms.bll.in.th:8000/';
 $conf['orgid'] = '1000000001';
 $conf['orgname'] = 'โรงเรียนไร้พรมแดน';
+$conf['inclassURL'] = $conf['url']."clicker";
+$conf['inclassRES']  = $conf['url']."clicker/get/";
 ?>

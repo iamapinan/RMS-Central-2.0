@@ -1,0 +1,10 @@
+<!-- Header -->
+<style type="text/css">
+.feedview {
+    display: block;
+    float: left;
+    width: 95%;
+    padding: 20px 20px;
+}
+</style>
+

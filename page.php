@@ -197,7 +197,7 @@
 
 	echo '</div>'."\n";
 	echo '</div>'."\n";
-	echo $p->bos('bottom-script.js');
+
 
 	if(getOptionVal($pop[6])==1){
 		//display footer

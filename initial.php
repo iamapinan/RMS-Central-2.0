@@ -41,20 +41,22 @@ if($_GET['go']=='logout'){
  if(isset($_GET['s']))
 	$addition = '?ref='.$ref.'&lt='.$_GET['s'];
 
-
-		echo '<div style="font-size: 18px;
-		display: block;
-		width: 280px;
-		padding: 10px;
-		margin: 50px auto;
-		background: #CCC;
-		text-align: center;
-		border: 1px solid #BDBDBD;
-		color: white;
-		text-shadow: 1px 1px 2px #333;
-		box-shadow: 3px 3px 0 #EEE;">Loging out please wait...</center>';
-		//echo '<META HTTP-EQUIV="Refresh" CONTENT="1;URL=http://rpdcenter.bll.in.th/oauth/signout.ashx?redirect='.conf('url').'">';.
 		echo '<META HTTP-EQUIV="Refresh" CONTENT="1;URL='.conf('url').'">';
+		echo '
+		<body style="margin:0px;">
+		<link rel="stylesheet" href="/library/plugin/font-awesome/css/font-awesome.min.css" type="text/css"/>
+		<div style="font-size: 38px;
+		display: block;
+		width: 100%;
+		padding: 100px 0;
+		margin: 50px auto;
+		background: rgba(59, 199, 255, 1);
+		text-align: center;
+		color: #fff;">
+		<p align="center"><i class="fa  fa-sign-out fa-5x"></i></p>
+		<i class="fa fa-circle-o-notch fa-spin"></i>&nbsp; กำลังออกจากระบบ</center>';
+		//echo '<META HTTP-EQUIV="Refresh" CONTENT="1;URL=http://rpdcenter.bll.in.th/oauth/signout.ashx?redirect='.conf('url').'">';.
+		echo '</body>';
 
 		exit();
 }

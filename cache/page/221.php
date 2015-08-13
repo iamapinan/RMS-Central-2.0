@@ -84,7 +84,7 @@ else
 }
 
 $sql = mysql_query("SELECT * FROM ".conf('table_prefix')."_subject WHERE $searchText filetype='blog' AND status='public' ORDER BY ".$aqr." LIMIT 0,10");
-echo '<div id="boxUI"><div class="header"> Public Blog</div> ';
+echo '<div id="boxUI"><h1 align="center"> Public Blog</h1> ';
 echo '<div class="boxContent" id="idmCL">';
 while($qr = mysql_fetch_array($sql)){
 	$checksubcategory = explode(',', $qr['desc']);
@@ -99,20 +99,20 @@ while($qr = mysql_fetch_array($sql)){
 		}
 		
 		if(in_array($_GET['gp'], $checksubcategory)||$_GET['gp']==$qr['group']){
-		echo "<p  onmouseover=\"$(this).find('.cc').show()\"  onmouseout=\"$(this).find('.cc').hide()\"><a href='/blog/".$qr['req_id']."' target='_blank'><img src='/image-api.php?width=100&height=100&image=/data/content/".$qr['req_id']."/".$qr['image']."' onerror=\"this.src='holder.js/100x100/random'\" class='stdo-image'></a>
+		echo "<p><a href='/blog/".$qr['req_id']."' target='_blank'><img src='/image-api.php?width=100&height=100&image=/data/content/".$qr['req_id']."/".$qr['image']."' onerror=\"this.src='holder.js/100x100/Image'\" class='stdo-image'></a>
 		<a href='/blog/".$qr['req_id']."' target='_blank' style=\"margin-top: 15px;display: inline-block;width: 75%;\">".$qr['subject']."</a>
 		<span class='des'>โดย ".str_replace('|',' ',$Usr['fullname'])."<br>
 		<span style='color: #aaa;font-size:11px;font-weight: normal;'><span style=\"color:#668AC3;\">".$gname['name']."</span> @เมื่อ ".date("d/m/Y, H:i:s", $qr['timestamp'])."</span>
-		<br> <span style='float: left;' class='cc'><a href='#' onclick=\"embeddlg(".$qr['bid'].");\"><img src='/library/icon/share.png'> Share</a></span>
+		<br> <span style='float: left;' class='cc'><a href='#' onclick=\"embeddlg(".$qr['bid'].");\"><i class='fa fa-share'></i> Share</a></span>
 		</p>";
 		}
 	}else
 	{
-		echo "<p  onmouseover=\"$(this).find('.cc').show()\"  onmouseout=\"$(this).find('.cc').hide()\"><a href='/blog/".$qr['req_id']."' target='_blank'><img src='/image-api.php?width=100&height=100&image=/data/content/".$qr['req_id']."/".$qr['image']."' onerror=\"this.src='holder.js/100x100/random'\" class='stdo-image'></a>
+		echo "<p><a href='/blog/".$qr['req_id']."' target='_blank'><img src='/image-api.php?width=100&height=100&image=/data/content/".$qr['req_id']."/".$qr['image']."' onerror=\"this.src='holder.js/100x100/Image'\" class='stdo-image'></a>
 		<a href='/blog/".$qr['req_id']."' target='_blank' style=\"margin-top: 15px;display: inline-block;width: 75%;\">".$qr['subject']."</a>
 		<span class='des'>โดย ".str_replace('|',' ',$Usr['fullname'])."<br>
 		<span style='color: #aaa;font-size:11px;font-weight: normal;'><span style=\"color:#668AC3;\">".$gname['name']."</span> @เมื่อ ".date("d/m/Y, H:i:s", $qr['timestamp'])."</span>
-		<br> <span style='float: left;' class='cc'><a href='#' onclick=\"embeddlg(".$qr['bid'].");\"><img src='/library/icon/share.png'> Share</a></span>
+		<br> <span style='float: left;' class='cc'><a href='#' onclick=\"embeddlg(".$qr['bid'].");\"><i class='fa fa-share'></i> Share</a></span>
 		</p>";
 	}
 }

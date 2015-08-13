@@ -25,6 +25,16 @@ textarea{width: 430px;height: 100px;resize: vertical;}
     background: #F9FFD8;
     color: #005092;
 }
+.frm-teacher-container{
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 5px 10px;
+    width: 80%;
+}
+.frm-teacher-container input[type=text]{
+border: none;
+border-bottom: 1px dotted #aaa;
+}
 .tipcontainer {
     margin: 15px 0;
     padding: 5px;
@@ -151,8 +161,9 @@ $(document).ready(function() {
               console.log(ths);
               $('.data-info').css('background-color','#fff');
               $('#'+ths).css('background-color','#eaf');
-              $('#cgx').hide();
-              $('#cgx select').removeAttr('required');
+              $('#cgx').show();
+              $('#cgx select').attr('required',true);
+			  $('#cgx .title').html('กลุ่มสาระวิชา <sup class="text-red">บังคับ</sup>');
               $('#cgd').show();
               $('#cgd select').attr('required',true);
               $('#cgd .title').html('ระดับชั้น <sup class="text-red">บังคับ</sup>');
@@ -163,8 +174,9 @@ $(document).ready(function() {
               $('#'+ths).css('background-color','#eaf');
               $('#cgx').hide();
               $('#cgx select').removeAttr('required');
-              $('#cgd').hide();
+              $('#cgd').show();
               $('#cgd select').removeAttr('required');
+			  $('#cgd .title').html('ระดับชั้น');
               $('#alwpb').show();
            break;
            

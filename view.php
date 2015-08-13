@@ -197,7 +197,7 @@ echo '<div id="ContentBody" class="mainbody">';
 	{
 		$toolsbt = '<a class="button btGray" href="/new_blog?edit='.$fetch['req_id'].'&token='.$session_token.'" onclick="window.location.href=$(this).attr(\'href\');"> Edit </a>
 		<a class="button btGray" href="javascript:void(0);" onclick="$(\'.urlcontainer\').html(\''.conf('url').'blog/'.$fetch['req_id'].'\');
-		$(\'.embedcontainer\').html(\'<textarea cols=97 rows=4 onclick=\&quot;this.focus();this.select()\&quot; readonly=\&quot;readonly\&quot;>&lt;iframe width=\&quot;100%\&quot; height=\&quot;600\&quot; src=\&quot;'.conf('url').'blog/'.$fetch['req_id'].'\&quot; frameborder=\&quot;0\&quot;&gt;&lt;/iframe&gt;</textarea>\');$(\'#sharedlg\').slideDown(200);"> Share </a>
+		$(\'.embedcontainer\').html(\'<textarea cols=82 rows=4 onclick=\&quot;this.focus();this.select()\&quot; readonly=\&quot;readonly\&quot;>&lt;iframe width=\&quot;100%\&quot; height=\&quot;600\&quot; src=\&quot;'.conf('url').'data/content/'.$fetch['req_id'].'/'.$fetch['req_id'].'.html\&quot; frameborder=\&quot;0\&quot;&gt;&lt;/iframe&gt;</textarea>\');$(\'#sharedlg\').slideDown(200);"> Share </a>
 		';
 	}
 

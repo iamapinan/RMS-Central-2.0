@@ -2,325 +2,166 @@
 
 class UStream extends common
 {
-	var $post_action = '';
 	var $ret = '';
-	public function __construct()
+
+	public function getStream($q=null,$rang='0,20')
 	{
-		$this->post_action = '
-		<div id="chd">
-			<a href="#" class="select update-status" onclick="ToggleMenu(\'update-status\',\'status-update-frm\');"><span>
-			<span class="sp-balloon"></span>Post message</span></a>
-			<!-- <a href="/new_blog" class="createContent"><span><span class="sp-blog"></span>เขียนบทความ</span></a>
-			<a href="/upload_content" class="uploadcontent"><span><span class="sp-upload"></span>อัพโหลดเนื้อหา</span></a> -->
-		</div>
-
-		<div class="status-update-frm showme">
-		<div style="position: relative;">
-		<textarea class="status-update-input" id="status-update-input" name="content"  placeholder="What do you want to talk?" style="resize: none; overflow-y: hidden; " disabled></textarea>
-		</div>
-		</div>
-
-		<div class="search_form">
-		<input type="text" class="input-class-quick-search" placeholder="ค้นหาเนื้อหาที่คุณต้องการ" name="ClassSearch" id="ClassSearch" onkeydown="clicksearch()" x-webkit-speech>
-		</div>
-
-		<script type="text/javascript">
-		<!--
-			$(document).ready(function(){
-				setInterval("loadCheck()", 600000);
-			});
-		//-->
-		</script>
-		';
-	}
-
-	public function check_support_type($filetype)
-	{
-		$av_type = explode(",",GetConf('available_type'));
-		if(in_array($filetype,$av_type))
-			return true;
-		else
-			return false;
-	}
-
-	public function getStream($m,$q=null,$rang=null)
-	{
-		$this->ret = '';
 		$i = UserInfo();
 		$my = new mysql;
-
-		if($m==0)
-		{
-			if($rang=='') $rang='0,10';
-			$cond = $q.' and ';
-		//Get lastest post from database
-			$qr = 'SELECT s.* FROM `'.conf('table_prefix').'_subject` s
-					  WHERE approve="yes"
-					ORDER BY bid DESC LIMIT '.$rang;
-			$res = $my->query($qr);
-
-			$this->ret .= $this->post_action;
-			$this->ret .= '<div class="middle-wrapper">';
-			$this->ret .= '<ul class="slist" id="slist">';
-		}
-
-		if($m==1) //Search Mode
-		{
-			//Search with keyword
-			$rang='0,50';
-			$qr = 'SELECT * FROM `'.conf('table_prefix').'_subject` s
-			WHERE '.$q.' approve="yes"
-			ORDER BY bid DESC LIMIT '.$rang;
-			$res = $my->query($qr);
-
-		}
-
-		if($m==2)
-		{
-			//Mode User profile page.
-			if($rang=='') $rang='0,10';
-			$cond = $q;
-
-			$exp = explode('=',$q);
-			$exp[1] = str_replace('"','',$exp[1]);
-			$getinfo = UserInfo($exp[1]);
-			$query = 'select * from '.conf('table_prefix').'_subject where ('.$cond.' OR post_to='.$getinfo['ssid'].') AND approve="yes" ORDER BY  `'.conf('table_prefix').'_subject`.`bid` DESC limit 0,10';
-
-			$res = $my->query($query);
-			if($i['user']==$exp[1]){
-				$this->ret .= $this->post_action;
-			}else
-			{
-				if(isset($_SESSION['loginid'])){
-					$uc = UserInfo($exp[1]);
-					if(friendCheck($uc['ssid'])=='true'){
-						$this->ret .= '
-						<div class="status-update-frm showme">
-						<textarea class="status-update-input" id="status-update-input" name="content" placeholder="เขียนข้อความของคุณ" style="resize: none; overflow-y: hidden; " ></textarea>
-						<input type="hidden" name="post_on" id="post_as" value="'.$uc['ssid'].'">
-						<span class="UpdateBT  btPost">'.trs('lg_10166').'</span>
-						</div>';
-					}
-				}
-			}
-			$this->ret .= '<div class="middle-wrapper">';
-			$this->ret .= '<ul class="slist-profile" id="slist-profile">';
-	}
-
-	if($m==3)
-	{
-		//For show more post
-		if($rang=='') $rang='0,10';
-		if($q=='')
-		{
-			$qr = 'SELECT * FROM '.conf('table_prefix').'_subject s WHERE s.approve="yes" ORDER BY  s.bid DESC LIMIT '.$rang;
-		}
-		else
-		{
-			$qr = 'SELECT s.* FROM `'.conf('table_prefix').'_subject` s
-			WHERE (s.username="'.$q.'" OR s.post_to="'.$q.'") AND approve="yes"
-			ORDER BY bid DESC LIMIT '.$rang;
-		}
+		$q = ($q!=null) ? 'WHERE '.$q : '';
+		$qr = 'SELECT * FROM tc_subject '.$q.' ORDER BY bid DESC LIMIT '.$rang;
 		$res = $my->query($qr);
-	}
 
-//End Mode
-	$c = count($res);
+		$c = count($res);
+		$allowtype = array('pdf'=>'-pdf-o',
+			'mp3'=>'-audio-o',
+			'ppt'=>'-powerpoint-o',
+			'pptx'=>'-powerpoint-o',
+			'wav'=>'-audio-o',
+			'mp4'=>'-video-o',
+			'zip'=>'-zip-o',
+			'rar'=>'-zip-o',
+			'txt'=>'-text-o',
+			'jpg'=>'-image-o',
+			'png'=>'-image-o',
+			'bmp'=>'-image-o',
+			'doc'=>'-word-o',
+			'docx'=>'-word-o',
+			'xls'=>'-excel-o',
+			'xlsx'=>'-excel-o');
 
-	for($x=0;$x<$c;$x++)
-	{
-		$aut = @$my->query('select * from '.conf('table_prefix').'_profile where user="'.$res[$x]['username'].'" ');
-		$g = $my->query('select name from '.conf('table_prefix').'_group where gid='.$res[$x]['group'].' ');
-
-	//Convert view count to integer.
-		$res[$x]['viewed'] = (int)$res[$x]['viewed'];
-	//Reset default values
-		$title = '';
-		$type = '';
-		$PostTypeIcon = '';
-		$pdt = '';
-		$statistice = '';
-		$thumbnail = '';
-
-		//Check public contents or private.
-		if(friendCheck($aut['ssid'])==false&&$res[$x]['status']=='private') continue;
-		//Weather filetype are support or not.
-		if($this->check_support_type($res[$x]['filetype'])==true)
+		$this->ret = '<ul class="slist" id="slist">';
+		for($x=0;$x<$c;$x++)
 		{
-			//Make defualt title message
-			$title = '<span class="stat" style="margin-bottom: 15px;margin-top: 10px;font-size: 14px;">'.$res[$x]['subject'].'</span>';
-			//Switch post type
-			switch($res[$x]['filetype'])
-			{
-				case 'status':
-					$type='Status';
-					$title = '';
-					$PostTypeIcon = '<span class="sp-balloon"></span>';
-					$pdt = '<span class="stat-g v'.$res[$x]['bid'].'" style="font-size: 14px;">'.iconv_substr($res[$x]['desc'],0,500,'utf-8').'</span>';
-				break;
-				case 'via':
-					$via = UserById($res[$x]['post_to']);
-					$type='Via';
-					$title = '';
-					$PostTypeIcon = '<span class="sp-balloon"></span> <b><a href="/u/'.$via['user'].'">'.str_replace("|"," &nbsp;",$via['fullname']).'</a></b></span>';
-					$pdt = '<span class="stat-g v'.$res[$x]['bid'].'" style="font-size: 14px;">'.iconv_substr($res[$x]['desc'],0,500,'utf-8').'</span>';
-				break;
-				case 'blog':
-					$type='Article';
-					$PostTypeIcon = '<span class="sp-blog"></span>';
-					$res[$x]['image'] = (is_file($_SERVER['DOCUMENT_ROOT'].'/data/content/'.$res[$x]['image'])) ? $res[$x]['image'] : '';
-					$thumbnail = ($res[$x]['image']!='') ? '<a href="/c/'.$res[$x]['req_id'].'" style="width: 410px;max-height: 300px;display: block;overflow: hidden;background: #333;border-top: 1px solid #ccc;border-bottom: 1px solid #ccc;margin-left: -10px;text-align: center;">
-					<img src="/image?width=410&height=400&image=/data/content/'.$res[$x]['image'].'&cropratio=2:1" class="postthumb" >
-					</a>' : '<a href="/c/'.$res[$x]['req_id'].'" class="button btGray">คลิกเพื่ออ่านบทความนี้</a>';
-					$pdt = '<span class="stat">'.iconv_substr(strip_tags($res[$x]['desc']),0,300,'utf-8').'</span>';
-					$statistice = '<span class="view_'.$res[$x]['bid'].' linkoption"> <span class="sp-chart-up"></span> '.$res[$x]['viewed'].' คนดู</span>';
-				break;
-				case 'pdf':
-					$type = 'Document';
-					$PostTypeIcon = '<span class="sp-pdf"></span>';
-					$thumbnail = ($res[$x]['image']!='') ? '<a href="/c/'.$res[$x]['req_id'].'" style="width: 410px;max-height: 300px;display: block;overflow: hidden;background: #333;border-top: 1px solid #ccc;border-bottom: 1px solid #ccc;margin-left: -10px;text-align: center;">
-					<img src="'.$res[$x]['cdn'].'/img/'.conf('cdn_user').'_'.$res[$x]['username'].'-'.$res[$x]['req_id'].'_'.$res[$x]['image'].'?width=410&height=360&cropratio=2:1" class="postthumb"  >
-					</a>' : '';
-					$pdt = '<span class="stat-g v'.$res[$x]['bid'].'" style="float:left;width: 100%;word-wrap:break-word;margin: 5px 0;">'.iconv_substr($res[$x]['desc'],0,500,'utf-8').'</span>';
-					$statistice = '<span class="view_'.$res[$x]['bid'].' linkoption"> <span class="sp-chart-up"></span> '.$res[$x]['viewed'].' คนดู</span>';
-				break;
-				case 'apps_post':
-					$sql = mysql_query('select * from '.conf('table_prefix').'_apps where aid='.$res[$x]['app_id']);
-					$apps = mysql_fetch_array($sql);
-					$type = $apps['app_name'];
-					$PostTypeIcon = '<span class="sp-ico"><img src="/image?width=16&height=16&cropratio=1:1&image=/apps/'.$apps['application_id'].'/'.$apps['photo'].'"></span>';
-					$pdt = '<span class="stat-g v'.$res[$x]['bid'].'">'.htmlspecialchars_decode($res[$x]['desc']).'</span>';
-				break;
-				case 'video':
-					$duration = ($res[$x]['duration']!='') ? date('H:i:s',$res[$x]['duration']) : date('H:i:s',videoduration($res[$x]['file']));
-					$type = 'Video';
-					$PostTypeIcon = '<span class="sp-video"></span>';
-					$thumbnail = ($res[$x]['image']!='') ? '<a href="/c/'.$res[$x]['req_id'].'"  class="video-play"><div class="play-indicator"><img src="/library/icon/playicon_b.png"></div><img src="'.$res[$x]['cdn'].'/img/'.conf('cdn_user').'_'.$res[$x]['username'].'-'.$res[$x]['req_id'].'_'.$res[$x]['image'].'?width=410&height=300&cropratio=2:1" class="postthumb"  ><span class="video-duration">'.$duration.'</span></a>' : '';
-					$pdt = '<span class="stat-g v'.$res[$x]['bid'].'" style="float:left;width: 100%;word-wrap:break-word;margin: 5px 0;">'.iconv_substr($res[$x]['desc'],0,500,'utf-8').'</span>';
-					$statistice = '<span class="view_'.$res[$x]['bid'].' linkoption"> <span class="sp-chart-up"></span> '.$res[$x]['viewed'].' View</span>';
-				break;
-				case 'flash/zip':
-					$type = 'Flash';
-					$PostTypeIcon = '<span class="sp-flash"></span>';
-					$thumbnail = ($res[$x]['image']!='') ? '<a href="/c/'.$res[$x]['req_id'].'" style="width: 410px;max-height: 300px;display: block;overflow: hidden;background: #333;border-top: 1px solid #ccc;border-bottom: 1px solid #ccc;margin-left: -10px;text-align: center;">
-					<img src="'.$res[$x]['cdn'].'/img/'.conf('cdn_user').'_'.$res[$x]['username'].'-'.$res[$x]['req_id'].'_'.$res[$x]['image'].'?width=410&height=360&cropratio=2:1" class="postthumb"  >
-					</a>' : '';
-					$pdt = '<span class="stat-g v'.$res[$x]['bid'].'" style="float:left;width: 100%;word-wrap:break-word;margin: 5px 0;">'.iconv_substr($res[$x]['desc'],0,500,'utf-8').'</span>';
-					$statistice = '<span class="view_'.$res[$x]['bid'].' linkoption"> <span class="sp-chart-up"></span> '.$res[$x]['viewed'].' View</span>';
-				break;
-			}
-		}
-		else
-			continue; //Skip if not support
+			$aut = UserInfo($res[$x]['username']);
+			if($aut['role']>=5)
+				$alt = '<sup><i class="fa fa-check-circle-o text-warn" title="ครู"></i></sup>';
+			else
+				$alt = '';
+			//Check user avatar.
+			$avatar = image_resize('/user/'.$aut['user'].'/'.$aut['avatar'],50,50);
 
-		//Check user avatar.
-		$avatar = ($aut[0]['avatar']=='') ? '/library/avatar/uAvatar-s.jpg' : '/user/'.$aut[0]['user'].'/'.$aut[0]['avatar'];
-		//End preparing data.
+			if($allowtype[$res[$x]['filetype']]=='-image-o')
+				$srcfile = '<div class="fileSRC"><a href="/data/content/'.$res[$x]['section'].'/'.$res[$x]['ref'].'/'.$res[$x]['file'].'" target="_blank" class="icon-thumbnail">
+				<img src="'.image_resize('/data/content/'.$res[$x]['section'].'/'.$res[$x]['ref'].'/'.$res[$x]['file'],80,60,'1.3:1').'" class="img-thumbnail"></a><span class="postfilename">'.$res[$x]['file'].'</span></div>';
+			else if($res[$x]['filetype']!='')
+				$srcfile = '<div class="fileSRC"><a href="/data/content/'.$res[$x]['section'].'/'.$res[$x]['ref'].'/'.$res[$x]['file'].'" target="_blank" class="icon-thumbnail"><i class="fa fa-file'.$allowtype[$res[$x]['filetype']].' fa-4x"></i></a><span class="postfilename">'.$res[$x]['file'].'</span></div>';
 
-		//Stream ouput start here.
-		//Stream own
-			$this->ret .= '
-			<li  class="post-'.$res[$x]['bid'].' content_line"  position-id="'.$res[$x]['bid'].'">
-				<div class="thumb-wrap">
-				<a href="/u/'.@$aut[0]['user'].'" class="uthumb" style="background: url(/image?width=50&height=50&cropratio=1:1&image='.$avatar.');box-shadow: 1px 1px 0 0 #eee;"></a>
-				</div>';
-		//Stream details
-				$this->ret .= '<div class="desc-wrap"><span class="stb-ar-l"></span>';
-		//Stream header
-				$this->ret .= '<span class="stat">
-				<b><a href="/u/'.@$aut[0]['user'].'">'.str_replace("|"," &nbsp;",@$aut[0]['fullname']).'</a></b>
-				'.$PostTypeIcon.'</span>';
-		//Owner post message
-				$this->ret .= $title;
-		//Thumbnail if exists.
-				$this->ret .= $thumbnail;
-		//Post description here.
-				$this->ret .= $pdt;
-
-		//End Details
-				$comment_cmd = mysql_query("select * from ".conf('table_prefix')."_comment where bid=".$res[$x]['bid']);
-				$cmc =mysql_num_rows($comment_cmd);
-
+			//Stream ouput start here.
 				$this->ret .= '
-				<div id="post-fnc-'.$res[$x]['bid'].'">
-				<div class="menu-fnc">
-				<span class="linkoption">
-					<a href="#" rel="tooltip" original-title="Like this post" onclick="liked('.$res[$x]['bid'].')">
-					<span class="sp-thumb-up"></span>
-					<span class="liked_'.$res[$x]['bid'].'"> '.$res[$x]['like'].'</span> Like  ·
-					</a>
-				</span>
-				<span class="linkoption commentcount">
-					<a href="javascript:void(0);" class="doComment" ><span class="sp-comments"></span> '.$cmc.' Comments</a>
-				</span>';
-				//Show viewed count
-				$this->ret .= $statistice;
-				$this->ret .= '</div>';
-				//Delete button
-				if($res[$x]['username']==$i['user']||($i['role']=='05'&&$res[$x]['username']!='system'))
-				$this->ret .= '<a href="javascript:void(0);" class="post-del p'.$res[$x]['bid'].' icons2"  rel="tooltip" original-title="Delete" onClick="delete_post('.$res[$x]['bid'].')">]</a>';
+				<li  class="post-'.$res[$x]['bid'].' content_line"  position-id="'.$res[$x]['bid'].'">
+					<div class="thumb-wrap"><a href="/profile/'.$aut['user'].'" class="uthumb img-radius" style="background: url('.$avatar.');"></a></div>';
+					$this->ret .= '<div class="desc-wrap">';
+					$this->ret .= '<span class="postfullname">
+						<a href="/profile/'.$aut['user'].'">'.str_replace("|"," ",$aut['fullname']).'</a> '.$alt.'
+					</span>';
 
-				$this->ret .= '</div>
-				 <span class="trans-control"></span>
-				 <span class="stat-ft">'.relativeTime($res[$x]['timestamp']).'</span>';
-				$this->ret .= '</div>'; //Close desc
-				$this->ret .= '</li>';
-		//End stream
+					$this->ret .= '<div class="post_contents">';
+					$this->ret .= ''.nl2br($res[$x]['subject']).'';
+					$this->ret .= $srcfile;
+					$this->ret .= '</div>';
 
-		//Comments generate here...!
-			$this->ret .= '<div class="comment_control c'.$res[$x]['bid'].'">';
-			//Create comment input
-			$this->ret .= '<form onsubmit="cmts('.$res[$x]['bid'].'); return false;" action="" method="post">
-			<input type="text" id="comment-input" placeholder="Write your comment" x-webkit-speech autocomplete="off">
-			</form>';
-			//Get comment list
-			$cmqr = mysql_query("SELECT * FROM ".conf('table_prefix')."_comment WHERE bid = ".$res[$x]['bid']." ORDER BY cid DESC LIMIT 0,3");
-			$cmn = mysql_query("SELECT * FROM ".conf('table_prefix')."_comment WHERE bid = ".$res[$x]['bid']);
+			//End Details
+					$this->ret .= '
+					<div id="post-fnc-'.$res[$x]['bid'].'">
+						<span class="linkoption">
+							<a href="javascript:;" onclick="liked('.$res[$x]['bid'].')">
+							<i class="fa fa-thumbs-up"></i>
+							<span class="liked_'.$res[$x]['bid'].'"> '.$res[$x]['like'].'</span> Like
+							</a>
+						</span>
+						';
 
-			//Start comments
-			$this->ret .= '<ul>';
-			while($cmexec = @mysql_fetch_array($cmqr))
-			{
-				$ut = UserById($cmexec['uid'],'fullname,user,avatar');
-				$this->ret .= '<li id="cm'.$cmexec['cid'].'">';
-				if($cmexec['uid']==$i['ssid']||$res[$x]['username']==$i['user']||$i['role']=='05')
-				$this->ret .= '<a href="javascript:void(0);" class="icons2 cmdel" onclick="cmdel('.$cmexec['cid'].')" >]</a>';
-				$this->ret .= '<img src="/image?width=30&height=30&cropratio=1:1&image=/user/'.$ut['user'].'/'.$ut['avatar'].'" class="ust" onerror="this.src=\'/image?width=30&height=30&cropratio=1:1&image=/library/avatar/uAvatar-s.jpg\'"> <div class="cmmsg"> <a href="/u/'.$ut['user'].'"><b>'.str_replace('|',' ',$ut['fullname']).'</b> <small class="cmt">'.relativeTime($cmexec['timestamp']).'</small></a>
-				<div id="message_inf">'.$cmexec['msg'].'</div>
-				</div></li>';
-			}
-			$this->ret .='</ul>';
-			$pcmc = mysql_num_rows($cmn);
-			if($pcmc >=4)
-			{
-				$this->ret .= '<div class="cmm profile_btmore"  onClick="more_cm('.$res[$x]['bid'].')">
-				 Show more comments
-				</div>';
-			}
-			$this->ret .= '</div>';
-			//End Generate comment..
+						//Delete button
+						if($res[$x]['username']==$i['user']||$i['role']>=5){
+							$this->ret .= '
+							<span class="linkoption">
+							&nbsp;<a href="javascript:;" class="p'.$res[$x]['bid'].'" onClick="delete_post('.$res[$x]['bid'].')">
+							<i class="fa fa-trash-o"></i> ลบ</a>
+							</span>';
+						}
+						if($res[$x]['response_need']==1){
+							//For student
+							if($i['role']<=3){
+								$replylookup[$x] = mysql_query("SELECT * FROM tc_comment WHERE uid=".$i['ssid']." AND bid=".$res[$x]['bid']." ORDER BY cid DESC LIMIT 0,3");
+							}
+							else{
+								$replylookup[$x] = mysql_query("SELECT * FROM tc_comment WHERE bid=".$res[$x]['bid']." ORDER BY cid DESC LIMIT 0,3");
+							}
+							$replyCount[$x] = mysql_num_rows($replylookup[$x]);
+							
+							if($replyCount[$x]>=1){
+								$rep_text[$x] = "เคยตอบแล้วแล้ว ".$replyCount[$x]." ครั้ง";
+								$replyBox[$x] .= '<div class="replyContainer">';
+								while($replyresult[$x] = mysql_fetch_array($replylookup[$x])){
+									if($replyresult[$x]['file']!='') $filetext[$x] = '<div class="fileSRC"><a href="'.$replyresult[$x]['file'].'" target="_blank"><i class="fa fa-file fa-2x"></i> &nbsp;<span class="inlinepos">'.basename($replyresult[$x]['file']).'</span></a></div>';
+									else $filetext[$x] = '';
+									$replyUser = UserById($replyresult[$x]['uid']);
+									$replyBox[$x] .= '<div class="replyListbox" id="rep-'.$replyresult[$x]['cid'].'">
+									<div class="inlinepos"><img src="'.image_resize('/user/'.$replyUser['user'].'/'.$replyUser['avatar'] ,30,30).'" class="img-circle"></div>
+									<div class="inlinepos"><p class="marginbottom5">
+									<a href="/profile/'.$replyUser['user'].'" class="inlinepos">'.str_replace('|',' ',$replyUser['fullname']).'</a>
+									 
+									<span class="inlinepos"> &nbsp;'.$replyresult[$x]['msg'].'</span></p>
+									'.$filetext[$x].'
+									<span class="inlinepos text-gray">'.relativeTime($replyresult[$x]['timestamp']).'</span>';
+						if($i['role']>=5){
+						if($i['ssid']!=$replyresult[$x]['uid']){
+						$replyBox[$x] .= '		
+									· <span class="inlinepos"><a href="javascript:;" onclick="delreply('.$replyresult[$x]['cid'].')"><i class="fa fa-trash"></i> ลบ</a></span>';
+						}
+						if($replyresult[$x]['status']==0&&$i['ssid']!=$replyresult[$x]['uid']){
+						$replyBox[$x] .= '· <span class="inlinepos text-gray point-'.$replyresult[$x]['cid'].'"><a href="javascript:;" onclick="addPoint('.$replyresult[$x]['cid'].')"><i class="fa fa-plus-circle"></i> ให้คะแนน</a></span>';
+						}else if($i['ssid']!=$replyresult[$x]['uid']){
+							$replyBox[$x] .= '· <span class="inlinepos text-gray point-'.$replyresult[$x]['cid'].'">มี 1 คะแนน</span>';
+						}
+						
+						if($replyresult[$x]['show']==0&&$i['ssid']!=$replyresult[$x]['uid']){
+						$replyBox[$x] .= '· <span class="inlinepos text-gray pb-'.$replyresult[$x]['cid'].'"><a href="javascript:;" onclick="showreply('.$replyresult[$x]['cid'].')"><i class="fa fa-eye"></i> เปิดเผย</a></span>';
+						}else if($i['ssid']!=$replyresult[$x]['uid']){
+						$replyBox[$x] .= '· <span class="inlinepos text-gray pb-'.$replyresult[$x]['cid'].'">สาธารณะ</span>';
+						}
+						$replyBox[$x] .= '</div></div>';
+						}
+								}
+								$replyBox[$x] .= '</div>';
+							}
+							else $rep_text[$x] = "";
+							$this->ret .= '&nbsp;<a href="javascript:;" onclick="replybtn('.$res[$x]['bid'].')" class="replybutton" data-id="'.$res[$x]['bid'].'"> <span class="linkoption" >
+						<i class="fa fa-reply"></i> ตอบกลับ</span></a> <span class="linkoption text-gray">'.$rep_text[$x].'</span>';
+							$this->ret .= '<div class="replybox rep-'.$res[$x]['bid'].'">
+								<span class="replyinput">
+									<input type="text" name="replymsg" class="replymsg" id="replymsg-'.$res[$x]['bid'].'" placeholder="ข้อความของท่าน">
+									<div class="rpbutton">
+									<a href="javascript:;" onclick="addreplyfile('.$res[$x]['bid'].')" class="attf replyoptionbt"><i class="fa fa-paperclip"></i> แนบไฟล์</a>&nbsp;&nbsp;
+									<a href="javascript:;" onclick="savereply('.$res[$x]['bid'].')" class="repsa replyoptionbt"><i class="fa fa-check-circle"></i> ตอบ</a>
+									<a href="javascript:;" onclick="$(\'.replybox\').hide()" class="repsa replyoptionbt"><i class="fa fa-times"></i> ยกเลิก</a>
+									</div>
+								</span>
+								<input type="file" name="replyFile" class="hidden" id="repf-'.$res[$x]['bid'].'" onchange="$(\'.attf\').html(\'มี 1 ไฟล์\');$(\'.repsa\').addClass(\'text-green\')">
+							</div>';
+						}
+						$this->ret .= '&nbsp;&nbsp;<span class="linkoption"><i class="fa fa-clock-o"></i> '.relativeTime($res[$x]['timestamp']).'</span>';
 
+						$this->ret .= '</div>'; //Close post-fnc
+					$this->ret .= '</div>'; //Close desc-wrap
+					$this->ret .= $replyBox[$x];
+					$this->ret .= '</li>';
+			//End stream
 
-	}//End for loops.
-	$this->ret .= '</ul>';
+		}//End for loops.
+		$this->ret .= '</ul>';
 
-		if(($m==1||$m==0)&&$c>=10){
-
-			$this->ret .= '<div class="btmore" style="margin-left: 30px;"> Show more contents </div>';
-		}
-
-		if($m==2&&$c>10){
-			$this->ret .= '<div class="profile_btmore" onClick="MoreProfilePage(\''.$_REQUEST['indentity'].'\');" style="margin-left: 30px;"> Show more contents </div>';
-		}
-		else if($c>10)
+		if($c>20)
 		{
-			$this->ret .= '<div class="btmore" style="margin-left: 30px;"> Show more contents </div>';
+			$this->ret .= '<div class="btmore" onclick="morefeed()"><i class="fa fa-chevron-circle-down"></i> แสดงเพิ่มเติม </div>';
 		}
 
-		$this->ret .= '</div>';
-
-	return $this->ret;
+		if($c==0)
+		{
+			$this->ret .= '<h2 class="btmore"><i class="fa fa-comment-o fa-2x"></i> เริ่มโพสต์เป็นคนแรก </h2>';
+		}
+		return $this->ret;
 	}
 
 }
-?>

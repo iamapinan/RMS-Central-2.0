@@ -11,7 +11,7 @@
 		<div class="tipbox">
 			<div class="tipcontainer">
 				<p style="text-align: center;"><i class="fa fa-question-circle fa-4x text-warn"></i></p>			
-				<?php if($client['role']>=6):?>
+				<?php if($client['role']>=5):?>
 				<span id="standard" class="data-info"><b>ประเภทวิชาพื้นฐาน</b> คือ วิชาที่ถูกกำหนดจากสารการเรียนรู้ในหลักสูตรมาตรฐาน 
 						การสร้างวิชาประเภทนี้จำเป็นต้องสร้างห้องเรียนในเมนู My Class ก่อนเนื่องจากต้องกำหนดผู้เรียนด้วย</span>
 				<?php endif;?>
@@ -39,7 +39,7 @@
 								$sql_lev = mysql_query('select * from '.conf('table_prefix').'_course_type order by ctid asc');
 								while($lev = mysql_fetch_array($sql_lev))
 								{
-									if($client['role']<6&&$lev['name']=='standard') continue; 
+									if($client['role']<5&&$lev['name']=='standard') continue; 
 									echo '<option value="'.$lev['name'].'"> '.$lev['thText'].'</option>';
 								}
 							?>
@@ -76,12 +76,21 @@
 					<p class="title">คำอธิบายรายวิชา/ ตัวชี้วัดต่างๆ  <sup class="text-red">บังคับ</sup></p>
 					<p class="frm-obj"><textarea name="course_detail" required></textarea></p>
 				</div>
-				<div class="frm-group">
-					<p class="title">กำหนดครูผู้สอน <sup class="text-red">บังคับ</sup></p>
+				<div class="frm-group frm-teacher-container">
+					<p class="title">กำหนดครูผู้สอนเพิ่มเติม</p>
 					<p class="frm-obj menulist">
 					<input type="text" class="text-input" name="group_member_check" id="idCheck" placeholder="ป้อนชื่อแล้วเลือกจากรายการ">
 					<ul class="uls hidden"></ul></p>
-					<div class="member-list"></div>
+					<div class="member-list">
+					<?php
+						$img = ($client['avatar']!='') ? '/user/'.$client['user'].'/'.$client['avatar'] : '';
+					?>
+					<span class="member_selected" id="member-id-<?php echo $client['ssid'];?>">
+						<input type="hidden" name="member_group[]" value="<?php echo $client['ssid'];?>">
+						<img src="<?php echo image_resize($img, 26, 26);?>" class="inlinepos"> 
+						<?php echo str_replace('|',' ',$client['fullname']);?>    
+					</span>
+					</div>
 				</div>
 				<div class="frm-group hidden" id="cgd">
 					<p class="title">ระดับชั้น</p>
@@ -99,8 +108,8 @@
 					</p>
 				</div>
 				<div class="frm-group">
-					<p class="title">ภาพประกอบ <sup class="text-red">บังคับ</sup></p>
-					<p class="frm-obj"><input type="file" accept="image/*" class="text-input" name="course_image" required></p>
+					<p class="title">ภาพประกอบ</p>
+					<p class="frm-obj"><input type="file" accept="image/*" class="text-input" name="course_image"></p>
 				</div>
 				<br>
 				<div class="frm-group">

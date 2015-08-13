@@ -1,41 +1,78 @@
+		<?php 
+			$state = $course->sessionStatus($sessionid->session);
+			if($state==0){ 
+					header('location: '.$http->currents('crs').'&q=media'); 
+					exit; 
+			}
+			if($state=='')
+			{
+				header('location: /404');
+				exit;
+			}
+
+			$courseinfo = $course->courseInfo();
+			$courseimage = $config['install_path'].$course->coursedir.'/'.$courseinfo['image'];
+
+			$teacherinfo = $usr->teacherProfile();
+			$teacherimage = $config['install_path'].$course->coursedir.'/'.$teacherinfo['photo'];
+		?>
 		<div class="row">
 		  	<div class="col-md-10">
-		  		<div class="row">
-		  			<div class="col-md-12 workspace"></div>
+		  		<div class="row showcase">
+					<div class="col-sm-5 workspace-image text-right">
+						<img class="courseimg" src="<?php echo $course->imageSetup($courseimage,'200x200',"COURSE");?>">
+					</div>
+					<div class="col-sm-7 workspace-info">
+						<?php 
+							echo '<h1>'.$courseinfo['title'].'</h1>';
+							echo '<div class="cdtail">'.nl2br($courseinfo['description']).'</div>';
+						?>
+					</div>
 		  		</div>
 		  		<br>
 		  		<div class="panel panel-default">
-		  		  <div class="panel-heading">
-			  		  <a href="#collapseThree" class="collapsed" data-toggle="collapse" aria-expanded="false" aria-controls="collapseThree">
-			  		  <i class="fa fa-caret-square-o-down"></i> นักเรียน (<?php echo $student['count'];?>)</a>
-		  		  </div>
 				  <div class="panel-body stdArea collapse in" id="collapseThree">
+				  <?php 
+				  	$std = $course->getStdAll();
+				  	$randspeed = $course->getCourseConfig('random_speed');
+				  	echo "<input type=hidden id=stdcount value=".count($std).">";
+				  	echo "<input type=hidden id=playtime value=$randspeed>";
+				  	$x=0;
+				  	foreach($std as $s):
+				  		$x++;
+				  		$score = $usr->Score($s['uid']);
+				  		
+				  ?>
+					    <div class="thumbnail" id="<?php echo $x;?>" data-user="<?php echo $s['uid'];?>" data-photo="<?php echo $usr->avatar($s['uid'],'250x250');?>" 
+					    data-crystal=<?php echo $score['crystal'];?> data-gold=<?php echo $score['gold'];?> 
+					    data-coin=<?php echo $score['coin'];?>>
+					      <img src="<?php echo $usr->avatar($s['uid'],'66x66');?>" class="img-rounded">
 
-					    <div class="thumbnail" id="1">
-					      <img src="img.php?width=66&height=66&cropratio=1:1&image=/clicker/data/70/std-111.jpg" class="img-rounded">
 					      <div class="caption text-center">
-					        <p class="stdCap">นิภา กุนเชียง</p>
+					        <p class="stdCap"><?php echo ucfirst($s['firstname']).' '.ucfirst($s['lastname']);?></p>
 					      </div>
 					    </div>
-
-					    <div class="thumbnail" id="2">
-					      <img src="img.php?width=66&height=66&cropratio=1:1&image=/clicker/data/70/std-112.jpg" class="img-rounded">
-					      <div class="caption text-center">
-					        <p class="stdCap">วินัย ใจดำ</p>
-					      </div>
-					    </div>
+					<?php endforeach;?>
 
 				  </div>
 				</div>
 		  	</div>
 		    <div class="col-md-2">
-		  		<div class="list-group">
-		  		  <a href="#" class="list-group-item disabled"><i class="fa fa-check"></i> &nbsp;เช็คชื่อเข้าเรียน <span class="badge">soon</span></a>
-				  <a href="javascript:repeat();" class="list-group-item"><i class="fa fa-random"></i> &nbsp;สุ่มนักเรียน 1 คน</a>
-				  <a href="#" class="list-group-item"><i class="fa fa-magnet"></i> &nbsp;สุ่มนักเรียนโดยระบุจำนวนคน</a>
-				  <a href="#" class="list-group-item disabled"><i class="fa fa-users"></i> &nbsp;จัดการกลุ่ม <span class="badge">soon</span></a>
-				  <a href="#" class="list-group-item disabled"><i class="fa fa-trophy"></i> &nbsp;จัดการคะแนน <span class="badge">soon</span></a>
-				</div>
+		    	<div class="teacher-avatar"><img src="<?php echo $course->imageSetup($teacherimage,'288x200','Teacher','1:0.7');?>">
+		    	<h2>ครู <?php echo $teacherinfo['firstname'];?></h2></div>
+		    	<div class="button-group">
+			  		<a href="javascript:repeat();" class="btn btn-link" role="button">
+			  			<i class="fa fa-random fa-5x"></i>
+			  			<h3>สุ่มนักเรียน</h3>
+			  		</a>
+			  	</div>
+			  	<div class="button-group">
+			  		<a href="javascript:repeatmulti();" class="btn btn-link" role="button">
+			  			<i class="fa fa-random fa-5x"></i>
+			  			<h3>สุ่มนักเรียนหลายคน</h3>
+			  		</a>
+			  	</div>
+		  		
 		  	</div>
 		</div>
 		<audio id="BGMPlayer">

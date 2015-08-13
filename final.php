@@ -189,7 +189,6 @@ if($status==0)
 //Footere
 	echo '</div>'."\n";
 	echo '</div>'."\n";
-	echo $p->bos('bottom-script.js');
 	//display footer
 	$ft_wrapper = '<div class="clear"></div>';
 	$ft_wrapper .= '<div id="footer-wrapper">'."\n";

@@ -1,0 +1,6 @@
+#
+# Apache/PHP/Apinan settings:
+#
+# Set some options.
+
+Options -Indexes

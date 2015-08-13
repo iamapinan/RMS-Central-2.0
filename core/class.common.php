@@ -1,5 +1,30 @@
 <?php
 define("lang","th",true);
+	$thai_day_arr=array("อาทิตย์","จันทร์","อังคาร","พุธ","พฤหัสบดี","ศุกร์","เสาร์");
+	$thai_month_arr=array(
+		"0"=>"",
+		"1"=>"มกราคม",
+		"2"=>"กุมภาพันธ์",
+		"3"=>"มีนาคม",
+		"4"=>"เมษายน",
+		"5"=>"พฤษภาคม",
+		"6"=>"มิถุนายน",	
+		"7"=>"กรกฎาคม",
+		"8"=>"สิงหาคม",
+		"9"=>"กันยายน",
+		"10"=>"ตุลาคม",
+		"11"=>"พฤศจิกายน",
+		"12"=>"ธันวาคม"					
+	);
+	function thai_date($time){
+		global $thai_day_arr,$thai_month_arr;
+		$thai_date_return= $thai_day_arr[date("w",$time)];
+		$thai_date_return.=	", ".date("j",$time);
+		$thai_date_return.=" ".$thai_month_arr[date("n",$time)];
+		$thai_date_return.=	" ".(date("Yํ",$time)+543);
+		$thai_date_return.=	" เวลา ".date("H:i",$time)." น.";
+		return $thai_date_return;
+	}
 
 	function conf($configname)
 	{
@@ -37,18 +62,15 @@ define("lang","th",true);
         return true;
 
 	}
-	function get_images($html_string)
+	function get_images($htmlstr)
 	{
-		$post_images = array();
-		preg_match_all('~<img.*?src=["\']+(.*?)["\']+~', $html_string, $image_matches, PREG_SET_ORDER);
-		foreach ($image_matches as $image_match)
-		{
-		list($width, $height, $type, $attr) = getimagesize($image_match[1]);
-		if($width<=250&&$height<=80) continue;
-			$post_images[] = $image_match[1];
-		}
 
-		return $post_images;
+		include('module/htmldom/simple_html_dom.php');
+		$html = str_get_html($htmlstr);
+		foreach($html->find('img') as $element)
+		$return[] = $element->src;
+
+		return $return;
 	}
 	function ftype($f) {
                     curl_setopt_array(($c = @curl_init((!preg_match("/[a-z]+:\/{2}(?:www\.)?/i",$f) ? sprintf("%s://%s/%s", "http" , $_SERVER['HTTP_HOST'],$f) :  $f))), array(CURLOPT_RETURNTRANSFER => 1, CUROLPT_HEADER => 1));
@@ -105,6 +127,14 @@ define("lang","th",true);
 */
 	  return $first_img;
 	}
+	
+	function formatCourseType($type){
+		$typearr = array('standard'=>'วิชาพื้นฐาน',
+					  'extra'=>'วิชาเพิ่มเติม',
+					  'public'=>'วิชาสาธารณะ');
+		
+		return $typearr[$type];
+	}
 
 	function UserInfo($g = null)
 	{
@@ -112,7 +142,7 @@ define("lang","th",true);
 		$u = @$_SESSION['loginid']['nickname'];
 		else
 		$u = $g;
-        
+
         if(!isset($_SESSION['u'.$u])){
             $db = new mysql;
             $res = $db->query('select * from '.conf('table_prefix').'_profile where user="'.$u.'" ');
@@ -122,12 +152,17 @@ define("lang","th",true);
         {
             $ret = $_SESSION['u'.$u];
         }
-        
+
 		return $ret;
 	}
+
     function image_resize($image, $w=100, $h=100, $crop='1:1'){
-        return "/image?width=$w&height=$h&cropratio=$crop&image=$image";
+    	if($image!='')
+        	return "/image?width=$w&height=$h&cropratio=$crop&image=$image";
+        else
+        	return "/holder.png/".$w."x".$h;
     }
+
 	function MoodleUser($g = null)
 	{
 		if($g==null)
@@ -152,7 +187,7 @@ define("lang","th",true);
 	{
 		$db = new mysql;
 		$res = $db->query('select * from '.conf('table_prefix').'_classroom where clsid='.$g);
-		$res[0] ['text'] = ($res[0]['grade']>=7&&$res[0]['grade']<=12) ? 'มัธยมศึกษาปีที่ '.($res[0]['grade']-6) : 'ประถมศึกษาปีที่ '.$res[0]['grade'];
+		$res[0]['text'] = ($res[0]['grade']>=7&&$res[0]['grade']<=12) ? 'มัธยมศึกษาปีที่ '.($res[0]['grade']-6) : 'ประถมศึกษาปีที่ '.$res[0]['grade'];
 		return $res[0];
 	}
 
@@ -162,6 +197,26 @@ define("lang","th",true);
 		$res = $db->query('select * from '.conf('table_prefix').'_course where course_id="'.$g.'" ');
 
 		return $res[0];
+	}
+	
+	function ClassSession($cid=null,$clid=null, $ses = null)
+	{
+		
+		$db = new mysql;
+		if($ses!=null){
+			$res = $db->query('select * from '.conf('table_prefix').'_class_session where sessionid="'.$ses.'" ');
+		}
+		elseif ($clid==null){
+			$res = $db->query('select * from '.conf('table_prefix').'_class_session where course_id='.$cid.' order by sessionid asc');
+		}
+		elseif ($cid==null){
+			$res = $db->query('select * from '.conf('table_prefix').'_class_session where class_id='.$clid.' order by sessionid asc');
+		}
+		elseif ($clid!=null&&$cid!=null){
+			$res = $db->query('select * from '.conf('table_prefix').'_class_session where course_id='.$cid.' and class_id='.$clid.' order by sessionid asc');
+		}
+		
+		return $res;
 	}
 
 	function PageInfo($g = null, $type = 'group')
@@ -453,13 +508,17 @@ class common extends profile
 					$ret .= '<ul class="rb_menu">'."\n";
 
 					if(isset($_SESSION['loginid'])){
+					$rb_avatar = ($uif['avatar']!='') ? image_resize('/user/'.$uif['user'].'/'.$uif['avatar'],30,30) : image_resize('',30,30);
+					$shortname = explode('|', $uif['fullname']);
 					$ret .= '	<a href="http://rpdcenter.bll.in.th/Pages/SignIn.aspx" style="color: #0B739E;"><li><img src="/library/images/mini-bll-logo.png" class="top-web-logo"> ไร้พรมแดน</li></a>'."\n";
-					$ret .= '<a href="'.conf('url').'my"><li><span><img src="/image?width=30&height=30&cropratio=1:1&image=/user/'.$uif['user'].'/'.$uif['avatar'].'" style="    border-radius: 3px;"></span> &nbsp;My Home</li></a>&nbsp;'."\n";
+					$ret .= '<a href="'.conf('url').'my"><li><span><img src="'.$rb_avatar.'" style="vertical-align: top;border-radius: 15px;"></span> &nbsp;'.$shortname[0].'</li></a>&nbsp;'."\n";
 					}
-					if(getConf('devmode')==1&&$this->isAdmin()==1) $ret .= '	<a href="'.conf('url').'course"><li><i class="fa fa-book"></i> Course</li></a>'."\n";
-					$ret .= '	<a href="'.conf('url').'public"><li><i class="fa fa-quote-right"></i> Blogs</li></a>'."\n";
-					$ret .= '	<a href="'.conf('url').'news"><li><i class="fa fa-newspaper-o"></i> News</li></a>'."\n";
+					$ret .= '<a href="'.conf('url').'public-content"><li><i class="fa fa-newspaper-o"></i> Contents</li></a>'."\n";
+					$ret .= '<a href="'.conf('url').'course"><li><i class="fa fa-book"></i> Course</li></a>'."\n";
+					$ret .= '<a href="'.conf('url').'public"><li><i class="fa fa-quote-right"></i> Blogs</li></a>'."\n";
+					
 					$ret .= '<li class="master-li"><a><i class="fa fa-bars fa-lg"></i></a>
+					<a onclick="window.location.href=\''.conf('url').'news\'" class="child-li">News</a>
 					<a onclick="window.location.href=\''.conf('url').'faq\'" class="child-li">FAQ</a>
 					<a onclick="window.location.href=\''.conf('url').'tutorial\'" class="child-li">Tutorial</a>
 					<a onclick="window.location.href=\''.conf('url').'download-center\'" class="child-li">Download</a>
@@ -469,9 +528,11 @@ class common extends profile
 					$ret .= '</ul>'."\n";
 					$ret .= '<div class="msg-alert-popup"></div>';
 					$ret .= '<span class="user-menu" style="right:0px;">
-					<a><span data="display-name" class="user-text"><i class="fa fa-search"></i></span><input type="text" id="shb" onclick="$(\'#shb\').css(\'width\',\'100px\');" name="kk" placeholder="Keyword"></a>
+					<a><span data="display-name" class="user-text"><i class="fa fa-search"></i></span>
+					<input type="text" id="shb" onclick="$(\'#shb\').css(\'width\',\'100px\');" name="kk" placeholder="Keyword"></a>
 					';
 					if(isset($_SESSION['loginid'])){
+						$ret .= '<a href="#"><span class="user-text noticon"><i class="fa fa-bell"></i></span></a>';
 						$ret .= '	<a href="'.conf('url').'go/logout"><span class="user-text"><i class="fa fa-sign-out"></i>Logout</span></a>';
 					}else{
 						$ret .= '	<a href="'.conf('url').'/login"><span class="user-text"><i class="fa fa-sign-in"></i>Login </span></a>';
@@ -550,7 +611,7 @@ $ret .='<link rel="stylesheet" type="text/css" href="/library/style.css"  media=
 '."\n";
 $ret .= $this->ShareHeader;
 $ret .= '<script type="text/javascript" src="/library/jsfunction.js"></script>';
-$ret .= '<script type="text/javascript" src="/holder.js"></script>';
+
 $ret .= '<script type="text/javascript" src="/library/plugin/tipsy/jquery.tipsy.js"></script>';
 $ret .= '</head>
 <body dir="ltr">
@@ -603,7 +664,7 @@ $ret .='<link rel="stylesheet" type="text/css" href="/library/style.css"  media=
 <script type="text/javascript" src="/library/jquery.autosize-min.js"></script>'."\n";
 $ret .= $this->ShareHeader;
 $ret .= '<script type="text/javascript" src="/library/jsfunction.js"></script>';
-$ret .= '<script type="text/javascript" src="/holder.js"></script>';    
+
 $ret .= '
 </head>
 <body dir="ltr">
@@ -661,7 +722,7 @@ $ret .='<link rel="stylesheet" type="text/css" href="/library/style.css"  media=
 <script type="text/javascript" src="/library/jquery.autosize-min.js"></script>'."\n";
 $ret .= $this->ShareHeader;
 $ret .= '<script type="text/javascript" src="/library/jsfunction.js"></script>';
-$ret .= '<script type="text/javascript" src="/holder.js"></script>';
+
 		if(@$_GET['edit']!='body'){
 		$ret .= $inc;
 		}

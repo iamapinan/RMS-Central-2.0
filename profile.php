@@ -12,7 +12,7 @@ if($Uinfo['user']==''||$Uinfo['session']=='Protected User')
 
 if(!isset($_SESSION['loginid'])&&$_GET['user']!='blog') header('location: /login');
 $ActiveMN[$_REQUEST['user']] = 'active';
-	
+
 if(!isset($_GET['user'])) $ActiveMN['home'] = 'active';
     //Assign Header
 	$p->PageHeader = '<META NAME="ROBOTS" CONTENT="ALL">';
@@ -26,7 +26,7 @@ if(!isset($_GET['user'])) $ActiveMN['home'] = 'active';
 
 //Assign Page Title
 	$p->PageTitle = str_replace("|"," ",$Uinfo['fullname'])."\n";
-    
+
 if($Uinfo['bday']=='')
 	$Uinfo['bday'] = 'ยังไม่ได้เพิ่มวันเกิด';
 
@@ -50,6 +50,7 @@ if($Uinfo['about']=='')
 	$cond = ' url = "'.@$_REQUEST['uid'].'"';
 
 	echo $p->globalheader();
+
 	echo '<script type="text/javascript" src="/library/ajaxfileupload.js"></script>';
 	echo '<div id="container">'."\n";
 	echo '<script type="text/javascript">
@@ -96,7 +97,7 @@ if($Uinfo['about']=='')
 		echo '<div id="status_message">'.$msg_status.'</div>';
 
 	if($Uinfo['banner']==null)
-	echo '<div id="ubn" style="background: #333 url(/image?width=988&height=310&cropratio=4:1&image=/library/images/sample_ubuntu1.jpg) no-repeat center center;">';
+	echo '<div id="ubn" style="background: #333 url(/image?width=988&height=310&cropratio=4:1&image=/library/images/bll-default-banner.jpg) no-repeat center center;">';
 	else
 	echo '<div id="ubn" style="background: #333 url(/image?width=988&height=310&cropratio=4:1&image=/user/'.$uinf.'/gallery/banner/'.$Uinfo['banner'].') no-repeat center center;">';
 	if($_GET['indentity']==$_SESSION['loginid']['nickname']&&$bs['name'] != 'Internet Explorer')
@@ -105,19 +106,38 @@ if($Uinfo['about']=='')
 
 	<input type="file" name="banneruploader" id="banneruploader" onChange="ajaxFileUpload();" style="width: 100px;height:20px;opacity: 0;position:relative;z-index: 0;" accept="image/jpeg,image/png,image/bmp">
 	</form>';
-	echo '<div class="profile-top-info"><span class="title-name">'.str_replace('|','&nbsp;',$Uinfo['fullname']).'</span>'; //Username
-	echo '<span class="profile-detail"><i class="fa fa-flag"></i> '.uRole($Uinfo['role']).'&nbsp; / &nbsp;<i class="fa fa-graduation-cap"></i>  '.orgname($Uinfo['org']).'</span>';
-	echo '</div>'; // Use info
 
-	if($iCUSTOME==null)
-	{
-		echo  $social->uAvatar($_SESSION['loginid']['nickname']);
-	}
-	else
-	{
-		echo  $social->uAvatar($iCUSTOME,'home');
-	}
+
+
 	echo '</div>';
+//When not in my page
+	if(!isset($_GET['user'])&&$client['ssid']!=$Uinfo['ssid'])
+	{
+		echo '<div class="userspace" style="border-bottom:none;  color: #fff;  position: absolute;  margin-top: -114px;  z-index: 10;">';
+		//Avatar
+			if($iCUSTOME==null)
+			{
+				echo  $social->uAvatar($_SESSION['loginid']['nickname']);
+			}
+			else
+			{
+				echo  $social->uAvatar($iCUSTOME,'home');
+			}
+		$Uinfo['provider'] = ($Uinfo['provider']=='bll') ? 'home' : $Uinfo['provider'];
+		echo '<div class="profile-top-info"><span class="title-name"><i class="fa fa-'.$Uinfo['provider'].'"></i> '.str_replace('|','&nbsp;',$Uinfo['fullname']).'</span>'; //Username
+		echo '<span class="profile-detail"><i class="fa fa-flag"></i> '.uRole($Uinfo['role']).'&nbsp; / &nbsp;<i class="fa fa-graduation-cap"></i>  '.orgname($Uinfo['org']).'</span>';
+		//If Student
+			if(!empty($Uinfo['class'])||!empty($Uinfo['grade'])&&$Uinfo['role']==3)
+			{
+				$grade = Level($Uinfo['grade']);
+				$gradeTxt = $grade['name'].'/'.$Uinfo['class'];
+				echo '<span class="profile-detail hci"><i class="fa fa-cube"></i> '.$gradeTxt.'</span>';
+			}
+		echo '</div>'; // Use info
+
+		echo '</div>';
+		exit;
+	}
 //left bar
 	echo '<div id="leftContainer">';
 
@@ -152,23 +172,23 @@ if($Uinfo['about']=='')
 			<li class="erasein '.@$ActiveMN['blog'].'"><i class="fa fa-quote-right fa-lg"></i> &nbsp;My Blog</li>
 			</a>';
 		}
-        if(getConf('devmode')==1&&$Uinfo['role']>=5){
+        if(getConf('devmode')==1){
 			echo '<a href="'.conf('url').'profile/'.$_GET['indentity'].'?user=class">
 			<li class="erasein '.@$ActiveMN['class'].'"><i class="fa fa-cube fa-lg"></i> &nbsp;My Organization</li>
 			</a>';
 		}
-		if(getConf('devmode')==1&&$Uinfo['role']>=5){
+		if(getConf('devmode')==1){
 			echo '<a href="'.conf('url').'profile/'.$_GET['indentity'].'?user=course">
 			<li class="erasein '.@$ActiveMN['course'].'"><i class="fa fa-book fa-lg"></i> &nbsp;My Courses</li>
 			</a>';
 		}
+		/*
 		if(getConf('devmode')==1&&$Uinfo['role']>=5){
 			echo '<a href="'.conf('url').'profile/'.$_GET['indentity'].'?user=group">
 			<li class="erasein '.@$ActiveMN['group'].'"><i class="fa fa-users fa-lg"></i> &nbsp;My Groups</li>
 			</a>';
 		}
-
-
+		*/
 		if((int)$Uinfo['role']>=8||$Uinfo['admin']==1){
 			echo '
 			<a href="'.conf('url').'profile/'.$_GET['indentity'].'?user=userman">
@@ -195,13 +215,79 @@ if($Uinfo['about']=='')
 	}
 echo '</div>';
 
+
+
 //middle content
 echo '<div id="middleContainer">';
-if(!isset($_GET['user'])||$_GET['user']=='home')
+if((!isset($_GET['user'])||$_GET['user']=='home')&&$client['ssid']==$Uinfo['ssid'])
 {
+	echo '<div class="userspace">';
+	//Avatar
+		if($iCUSTOME==null)
+		{
+			echo  $social->uAvatar($_SESSION['loginid']['nickname']);
+		}
+		else
+		{
+			echo  $social->uAvatar($iCUSTOME,'home');
+		}
+	$Uinfo['provider'] = ($Uinfo['provider']=='bll') ? 'home' : $Uinfo['provider'];
+	echo '<div class="profile-top-info"><span class="title-name"><i class="fa fa-'.$Uinfo['provider'].'"></i> '.str_replace('|','&nbsp;',$Uinfo['fullname']).'</span>'; //Username
+	echo '<span class="profile-detail"><i class="fa fa-flag"></i> '.uRole($Uinfo['role']).'&nbsp; / &nbsp;<i class="fa fa-graduation-cap"></i>  '.orgname($Uinfo['org']).'</span>';
+	//If Student
+		if(!empty($Uinfo['class'])||!empty($Uinfo['grade'])&&$Uinfo['role']==3)
+		{
+			$grade = Level($Uinfo['grade']);
+			$gradeTxt = $grade['name'].'/'.$Uinfo['class'];
+			echo '<span class="profile-detail hci"><i class="fa fa-cube"></i> '.$gradeTxt.'</span>';
+		}
+	echo '</div>'; // Use info
 
+	//Button under the name.
+		if(($Uinfo['class']==''||$Uinfo['grade']=='')&&$Uinfo['role']==3){
+			echo '<button class="button btRed btUnderTxt" onclick="lightbox('.$Uinfo['ssid'].',\'stdSetup\')"><i class="fa fa-warning"></i> กรุณากำหนดค่าส่วนตัวใหม่</button>';
+		}
+		else{
+			echo '<a href="/edit_profile" class="button btBlue btUnderTxt"><i class="fa fa-pencil"></i> แก้ไขโปรไฟล์</a>';
+		}
+
+	echo '</div>';
+	//Notification area.
+	if($Uinfo['role']==3){
+		$sqlClassChk = mysql_fetch_array(mysql_query("SELECT clsid FROM tc_classroom WHERE grade=".$Uinfo['grade']." AND cls_number=".$Uinfo['class']." AND sid=".$Uinfo['org']));
+		$sqlNoti = mysql_query("SELECT * FROM tc_class_session WHERE class_id=".$sqlClassChk['clsid']);
+		while($notilist = mysql_fetch_array($sqlNoti))
+		{
+			$nls .= '<p>'.$notilist['datetime'].'</p>';
+		}
+	}
+	if($Uinfo['role']>=5){
+		$sqlClassChk = mysql_query("SELECT course_id FROM tc_course WHERE alternet_teacher_id LIKE '%".$client['ssid']."%'");
+		while($courseCk = mysql_fetch_array($sqlClassChk)){
+
+			$sqlNoti = mysql_query("SELECT * FROM tc_class_session WHERE course_id=".$courseCk['course_id']) || die(mysql_error());
+			while($notilist = mysql_fetch_array($sqlNoti))
+			{
+				$nls .= '<p>'.$notilist['datetime'].'</p>';
+			}
+		}
+	}
 	
+	
+	echo '<h2 align="center"><i class="fa fa-bell"></i> การแจ้งเตือน</h2>';
+	echo '<div class="notileft">
+			<h3  align="center">ห้องเรียนที่กำลังจะถึง</h3>
+			'.$nls.'
+		</div>
+		  <div class="notiright">
+			<h3  align="center">กิจกรรมที่กำลังจะถึง</h3>
+		  </div>';
+	
+	//Stream area.
+	$query = "section='classroom' OR section='group' OR section='course' OR section='session' AND ref=".$result['clsid'];
+	echo $show->getStream();
 }
+
 if($_GET['user']=='version')
 {
 	if((int)$Uinfo['role']<=6&&$Uinfo['admin']==0) header('location: /my');
@@ -229,12 +315,12 @@ if($_GET['user']=='version')
 if($_GET['user']=='account')
 {
 
-		$sql_school_info = mysql_query('select sname from '.conf('table_prefix').'_school where sid='.$Uinfo['org']);
+	$sql_school_info = mysql_query('select sname from '.conf('table_prefix').'_school where sid='.$Uinfo['org']);
 	$sci = @mysql_fetch_array($sql_school_info);
 	$grp = explode(',', $Uinfo['remark']);
 	$grp = explode('=', $grp[0]);
 	$roleinfo = uRole($Uinfo['role']);
-	$levinfo = Level($Uinfo['level']);
+	$levinfo = Level($Uinfo['grade']);
 
 	echo '<div id="boxUI">
 			<p class="header"><i class="fa fa-user fa-lg"></i> ข้อมูลบัญชีผู้ใช้ &nbsp;<a href="'.conf('url').'edit_profile"><i class="fa fa-pencil"></i> Edit Profile</a></p>
@@ -245,6 +331,7 @@ if($_GET['user']=='account')
 					<p style="width: 100;"><span class="label">เพศ</span><span>'.$Uinfo['gender'].'</span></p>
 					<p style="width: 100;"><span class="label">หน่วยงาน</span><span>'.$sci['sname'].'</span></p>
 					<p style="width: 100;"><span class="label">อีเมล์</span><span>'.$Uinfo['email'].'</span></p>
+					<p style="width: 100;"><span class="label">URL</span><span><a href="'.conf('url').'profile/'.$Uinfo['user'].'">'.conf('url').'profile/'.$Uinfo['user'].'</a></span></p>
 					<p style="width: 100;"><span class="label">เบอร์โทร</span><span>'.$Uinfo['mobile'].'</span></p>
 					<p style="width: 100;"><span class="label">สถานะ</span><span>'.$roleinfo.'</span></p>';
 
@@ -269,13 +356,13 @@ if($_GET['user']=='account')
 						<span class="aculearn_password_toolbox">
 							<a href="#" id="acupassview" title="View aculearn password.">
 								<i class="fa fa-eye"></i>
-							</a> 
+							</a>
 							<a href="#" id="acupassch" title="Change aculearn password.">
 								<i class="fa fa-pencil" ></i>
 							</a>
 						</span>
 					</span></p>';
-			if($Uinfo['org']=='') 
+			if($Uinfo['org']=='')
 				{
 					echo '<p><span class="label" >&nbsp;</span> <span>บัญชีนี้ไม่มีสามารถใช้งาน Aculearn</span></p';
 				}
@@ -283,19 +370,18 @@ if($_GET['user']=='account')
 				<p><span class="label">&nbsp;</span><a href="'.conf('idm_server').'aculearn-idm/setup/acuconsole7_setup.exe" class="btBlue button"><icon class="fa fa-cloud-download"></icon> ดาวน์โหลด AcuConsole 7</a>
 			</div>
 		</div>';
-
 }
 
 if($_GET['user']=='userman')
 {
 	if((int)$Uinfo['role']<=6&&$Uinfo['admin']==0) header('location: /my');
 
-	?>
+?>
 	<link href="/library/jtable/themes/lightcolor/blue/jtable.css" rel="stylesheet" type="text/css" />
 	<link rel="stylesheet" href="/library/jui/css/smoothness/jquery-ui-1.10.4.custom.min.css">
 	<script src="/library/jui/js/jquery-ui-1.10.4.custom.min.js"></script>
 	<script language="javascript" src="/library/jtable/jquery.jtable.js"></script>
-		<div id="boxUI">
+	<div id="boxUI">
 			<div class="header"><i class="fa fa-umbrella fa-lg"></i> User Management </div>
 			<div class="boxContent">
 					<div class="filtering" style="display:block;padding: 5px 10px 15px 10px;">
@@ -577,8 +663,8 @@ if($_GET['user']=='userman')
 
 	</script>
 	<?php
-
 }
+
 if($_GET['user']=='settings')
 {
 		if((int)$Uinfo['role']<=6&&$Uinfo['admin']==0) header('location: /my');
@@ -593,9 +679,9 @@ if($_GET['user']=='settings')
 		?>
 	  <link rel="stylesheet" href="/library/toggle_style.css">
 	  <link rel="stylesheet" href="/library/plugin/redactor/redactor.css" type="text/css">
-      	  <script src="/library/plugin/redactor/redactor.min.js"></script>
+      <script src="/library/plugin/redactor/redactor.min.js"></script>
 	  <script src="/library/plugin/redactor/fontsize.js"></script>
-	   <script src="/library/plugin/redactor/fontcolor.js"></script>
+	  <script src="/library/plugin/redactor/fontcolor.js"></script>
 	  <link rel="stylesheet" type="text/css" href="/library/plugin/uploadifive/uploadifive.css">
 	  <script type="text/javascript" src="/library/plugin/uploadifive/jquery.uploadifive.min.js"></script>
 	  <script type="text/javascript">
@@ -666,8 +752,8 @@ if($_GET['user']=='settings')
 		});
 	  //-->
 	  </script>
-		<div id="boxUI">
-			<div class="boxContent">
+	  <div id="boxUI">
+		<div class="boxContent">
 			<p>
 				<i class="fa fa-toggle-on fa-lg"></i>
 				<a href="?user=settings&config=system" class="button <?php if(!isset($_GET['config'])||$_GET['config']=='system') echo ''; else echo 'btGray';?>">System</a>
@@ -769,7 +855,7 @@ if($_GET['user']=='settings')
 					background: #d70a16;
 					color: #fff;
 				}
-				 
+
 				// buttons active state
 				.redactor-toolbar li a:active,
 				.redactor-toolbar li a.redactor-act {
@@ -796,27 +882,34 @@ if($_GET['user']=='settings')
 
 		<?php
 }
+
 if($_GET['user']=='course')
 {
 
-    	$cimage = 'holder.js/100x80/random';
-   	$sql = mysql_query("SELECT * FROM ".conf('table_prefix')."_course WHERE `uid`=".$Uinfo['ssid']." AND `type`='public'");
-	$sqlx = mysql_query("SELECT * FROM ".conf('table_prefix')."_course WHERE `sid`=".$Uinfo['org']." AND `uid`=".$Uinfo['ssid']." AND `type`='extra' ORDER BY course_id DESC");
-    	$sqla = mysql_query("SELECT * FROM ".conf('table_prefix')."_course WHERE `sid`=".$Uinfo['org']." AND `uid`=".$Uinfo['ssid']." AND `type`='standard' ORDER BY course_id DESC");
+    $cimage = '/holder.png/100x80/Thumbnail';
+
+    if($Uinfo['role']>=5)
+    {
+
+   	$sql = mysql_query("SELECT * FROM ".conf('table_prefix')."_course WHERE `uid`=".$Uinfo['ssid']." AND `type`='public' OR (alternet_teacher_id LIKE('%".$Uinfo['ssid']."%') AND `type`='public')");
+	$sqlx = mysql_query("SELECT * FROM ".conf('table_prefix')."_course WHERE `sid`=".$Uinfo['org']." AND `uid`=".$Uinfo['ssid']." AND `type`='extra' OR (alternet_teacher_id LIKE('%".$Uinfo['ssid']."%') AND `sid`=".$Uinfo['org']." AND `type`='extra') ORDER BY course_id DESC");
+    $sqla = mysql_query("SELECT * FROM ".conf('table_prefix')."_course WHERE `sid`=".$Uinfo['org']." AND `uid`=".$Uinfo['ssid']." AND `type`='standard'
+    		OR (alternet_teacher_id LIKE('%".$Uinfo['ssid']."%') AND `sid`=".$Uinfo['org']." AND `type`='standard') ORDER BY course_id DESC");
 
 	echo '<div id="boxUI">
 		<div class="header">
 		<i class="fa fa-book fa-lg"></i> My Courses
 	';
-	if($Uinfo['role']>=5)
-		echo  '<a href="/new_course"><span class="box-option btBlue button"><i class="fa fa-file"></i> สร้างรายวิชา</span></a>';
-			//echo '<span class="pos-right"><input type="text" name="css" id="cs-search" placeholder="ค้นหา"></span>';
+
+	echo '<a href="/new_course"><span class="box-option btBlue button"><i class="fa fa-file"></i> สร้างรายวิชา</span></a>';
+
+	//echo '<span class="pos-right"><input type="text" name="css" id="cs-search" placeholder="ค้นหา"></span>';
 	echo '</div>';
-     	
+
 	echo '<div class="boxContent" id="idmCL">';
 	echo '<div class="thumbnail-list">';
-	
-	
+
+
 	$strSQL = mysql_query('select * from '.conf('table_prefix').'_course_type order by ctid asc');
 	while($result = mysql_fetch_array($strSQL))
 		{
@@ -834,27 +927,28 @@ if($_GET['user']=='course')
 					}
 
 			        		if($cs['img']=='') $img = $cimage; else $img = image_resize($cs['img'],100,80);
-					
+
 					echo '
 						<div class="list-items">
 							<img src="'.$img.'">
 							<div class="detail">
 								<h3>'.$cs['cname'].'</h3>
-								 <p>ชั้น '.$class['text'].'/'.$class['cls_number'].'</p>
 								 <p>กลุ่มสาระ '.$standardgroup['name'].'</p>
 								 <p>โดย '.$teacherText[1].'</p>
 							</div>
-							<div class="listbt">
-								<button class="button btGray"><i class="fa fa-child"></i> นักเรียน</button>
-								<button class="button btGray"><i class="fa fa-pencil"></i> แก้ไข</button>
-								<button class="button btGray" disabled><i class="fa fa-trash-o"></i> ลบ</button>
-								<button class="button btBlue" onClick="lightbox('.$cs['course_id'].')"><i class="fa fa-simplybuilt"></i> เริ่มห้องเรียน</button>
+							<div class="listbt">';
+					if($client['role']>=5):
+							echo '<button class="button btGray" onClick="lightbox('.$cs['course_id'].',\'CourseStd\')"><i class="fa fa-cube"></i> ห้องเรียน</button>
+								<button class="button btGray" onClick="lightbox('.$cs['course_id'].',\'editCourse\')"><i class="fa fa-pencil"></i> แก้ไข</button>';
+						endif;
+							echo ' <button class="button btGreen" onClick="lightbox('.$cs['course_id'].',\'courselb\')"><i class="fa fa-simplybuilt"></i> จัดการ</button>
+							<button class="button btBlue" onClick="lightbox('.$cs['course_id'].',\'ShareToCourse\')"><i class="fa fa-comments"></i> โพสต์</button>
 							</div>
 						</div>
 						';
 
 					}
-					if(mysql_num_rows($sqla)==0){
+					if(mysql_num_rows($sqla)==0&&$client['role']>=5){
 				            	echo '<p class="divider"></p><p align="center">ไม่พบรายวิชาในกลุ่มนี้ <a href="/new_course">คลิกที่นี่</a> เพื่อสร้างวิชาใหม่</p><p class="divider"></p>';
 				        	}
 				break;
@@ -874,19 +968,21 @@ if($_GET['user']=='course')
 							<img src="'.$img.'">
 							<div class="detail">
 								<h3>'.$cs['cname'].'</h3>
-								  <p>ชั้น '.$class['text'].'/'.$class['cls_number'].'</p>
 								  <p>โดย '.$teacherText[2].'</p>
 							</div>
-							<div class="listbt">
-								<button class="button btGray"><i class="fa fa-pencil"></i> แก้ไข</button>
-								<button class="button btGray" disabled><i class="fa fa-trash-o"></i> ลบ</button>
-								<button class="button btBlue" onClick="lightbox('.$cs['course_id'].')"><i class="fa fa-simplybuilt"></i> เริ่มห้องเรียน</button>
+							<div class="listbt">';
+						if($client['role']>=5):
+							echo '<button class="button btGray" onClick="lightbox('.$cs['course_id'].',\'CourseStd\')"><i class="fa fa-cube"></i> ห้องเรียน</button>
+								<button class="button btGray" onClick="lightbox('.$cs['course_id'].',\'editCourse\')"><i class="fa fa-pencil"></i> แก้ไข</button>';
+						endif;
+							echo ' <button class="button btGreen" onClick="lightbox('.$cs['course_id'].',\'courselb\')"><i class="fa fa-simplybuilt"></i> จัดการ</button>
+							<button class="button btBlue" onClick="lightbox('.$cs['course_id'].',\'ShareToCourse\')"><i class="fa fa-comments"></i> โพสต์</button>
 							</div>
 						</div>
 						';
 
 					}
-					if(mysql_num_rows($sqlx)==0){
+					if(mysql_num_rows($sqlx)==0&&$client['role']>=5){
 				            	echo '<p class="divider"></p><p align="center">ไม่พบรายวิชาในกลุ่มนี้ <a href="/new_course">คลิกที่นี่</a> เพื่อสร้างวิชาใหม่</p><p class="divider"></p>';
 				        	}
 				break;
@@ -908,16 +1004,19 @@ if($_GET['user']=='course')
 								 <p>'.str_pad(mb_substr($cs['cdetail'],0, 60, 'UTF-8'),63,'.').'</p>
 								 <p>โดย '.$teacherText[3].'</p>
 							</div>
-							<div class="listbt">
-								<button class="button btGray"><i class="fa fa-pencil"></i> แก้ไข</button>
-								<button class="button btGray" disabled><i class="fa fa-trash-o"></i> ลบ</button>
-								<button class="button btBlue" onClick="lightbox('.$cs['course_id'].')"><i class="fa fa-simplybuilt"></i> เริ่มห้องเรียน</button>
+							<div class="listbt">';
+						if($client['role']>=5):
+							echo '<button class="button btGray" onClick="lightbox('.$cs['course_id'].',\'CourseStd\')"><i class="fa fa-cube"></i> ห้องเรียน</button>
+								<button class="button btGray" onClick="lightbox('.$cs['course_id'].',\'editCourse\')"><i class="fa fa-pencil"></i> แก้ไข</button>';
+						endif;
+							echo '<button class="button btGreen" onClick="lightbox('.$cs['course_id'].',\'courselb\')"><i class="fa fa-simplybuilt"></i> จัดการ</button>
+							<button class="button btBlue" onClick="lightbox('.$cs['course_id'].',\'ShareToCourse\')"><i class="fa fa-comments"></i> โพสต์</button>
 							</div>
 						</div>
 						';
 
 					}
-					if(mysql_num_rows($sql)==0){
+					if(mysql_num_rows($sql)==0&&$client['role']>=5){
 				            	echo '<p class="divider"></p><p align="center">ไม่พบรายวิชาในกลุ่มนี้ <a href="/new_course">คลิกที่นี่</a> เพื่อสร้างวิชาใหม่</p><p class="divider"></p>';
 				        	}
 				break;
@@ -927,14 +1026,20 @@ if($_GET['user']=='course')
 	echo '</dvi>';
 	echo '</div>';
 	unset($teacherText);
+
+	}
+	elseif($Uinfo['role']==3){
+		echo 'Student Zone';
+	}
 }
+
 if($_GET['user']=='class')
 {
 
     echo '<script language="javascript">
         <!--
         $(document).ready(function(){
-            
+
             $(\'#ssettype\').change(function(){
                 var classhtml = "<h3>กำหนดจำนวนห้องเรียนในแต่ละชั้นของคุณ</h3><p class=\"divider\"></p>";
                     for(x=$(this).find(\':selected\').data(\'min\');x<=$(this).find(\':selected\').data(\'max\');x++){
@@ -943,18 +1048,21 @@ if($_GET['user']=='class')
                         else if(x>=7)
                             classhtml += "<div class=\"form-row\"><label>มัธยมศึกษาปีที่ "+(x-6)+" จำนวนห้อง:</label> <input type=\"number\" name=\"class_"+x+"\" value=\"1\" style=\"width: 30px\" max=15 min=1></div>"
                     }
-                    classhtml += "<p class=\"divider\"></p><button class=\'btGreen button\'>บันทึกการตั้งค่าห้องเรียน</button>"  
+                    classhtml += "<p class=\"divider\"></p><button class=\'btGreen button\'>บันทึกการตั้งค่าห้องเรียน</button>"
                     $(".class_option").html(classhtml);
-                
+
             })
         });
         //-->
     </script>';
 
 	echo '<div id="boxUI">
-				<div class="header"><i class="fa fa-cube fa-lg"></i> My Organization
-				<a href="/new_classroom"><span class="box-option btBlue button"><i class="fa fa-file"></i> สร้างห้องเรียนพิเศษ</span></a>
-				</div>';
+				<div class="header"><i class="fa fa-cube fa-lg"></i> My Organization';
+	if($client['role']>=5)
+	echo '<a href="/new_classroom"><span class="box-option btBlue button"><i class="fa fa-file"></i> สร้างห้องเรียนพิเศษ</span></a>';
+
+	echo '<a href="/public-classroom"><span class="box-option btBlue button"><i class="fa fa-plus"></i> เข้าร่วมห้องเรียนสาธารณะ</span></a>';
+	echo '</div>';
 	echo '<div class="boxContent" id="idmCL">';
 	echo '<div class="thumbnail-list">';
     $initial_setup_check = mysql_query("select stype from tc_school where sid=".$Uinfo['org']);
@@ -963,7 +1071,7 @@ if($_GET['user']=='class')
     if(($client['role']>=6||$client['admin']==1)&&$initial_sch_data['stype']==0){
 
         $get_stype = mysql_query("select * from ".conf('table_prefix')."_school_type");
-        
+
         echo '<div class="block-center">
             <h3><i class="fa fa-gear"></i> ตั้งค่าสถานศึกษา/องค์กร</h3>
             <p class="divider"></p>
@@ -987,15 +1095,16 @@ if($_GET['user']=='class')
     }
     else
     {
+    	if($client['role']>=5):
         //Special
         echo '<h2>ห้องเรียนพิเศษ</h2>';
         $sql_my_class = mysql_query("SELECT * FROM ".conf('table_prefix')."_classroom WHERE `uid`=".$Uinfo['ssid']." and class_type='special' ORDER BY clsid DESC");
         if(mysql_num_rows($sql_my_class)==0){
-            echo '<p class="divider"></p><p align="center">ไม่พบห้องเรียน <a href="/new_classroom">คลิกที่นี่</a> เพื่อสร้างห้องเรียนพิเศษของคุณ</p><p class="divider"></p>';
+            echo '<p class="divider"></p><p align="center">ไม่พบห้องเรียนพิเศษของคุณ</p><p class="divider"></p>';
         }
         //List classroom
         while($cs = mysql_fetch_array($sql_my_class)){
-            
+
                     $class_member_check1 = mysql_query("select `uid` from tc_class_register where `status`=1 and role=1 and `class_id`= ".$cs['clsid']);
                     $class_register_check1 = mysql_num_rows($class_member_check1);
                     $class_teacher = json_decode($cs['teacher']);
@@ -1004,68 +1113,162 @@ if($_GET['user']=='class')
                     	$t1 = UserDescript('fullname', $teacher);
                     	@$teacher_name .= str_replace('|', ' ', $t1['fullname']).' ';
                     }
-                $cs['image'] = ($cs['image']=='') ? 'holder.js/100x80/sky/text:Extra Classroom' : image_resize($cs['image'],100,80);
-            
-            echo '
-                        <div class="list-items">
-                            <img src="'.$cs['image'].'">
+                $cs['image'] = ($cs['image']=='') ? '/holder.png/100x80/Thumbnail' : image_resize($cs['image'],100,80);
 
-                            <div class="detail">
-                            <h3>'.$cs['title'].'</h3>
-                             <p>ครูประจำชั้น '.$teacher_name.'</p>
-                             <p>จำนวนนักเรียน '.$class_register_check1.' คน<p>
-                            </div>
-                            <div class="listbt">
-                                <button class="button btGray"><i class="fa fa-users"></i> นักเรียน</button>
-                                <button class="button btGray"><i class="fa fa-pencil"></i> แก้ไข</button>
-                                <button class="button btGray"><i class="fa fa-trash-o"></i>  ลบ</button>
-                            </div>
-                            
-                        </div>
-                ';
+            echo '<div class="list-items">
+                    <img src="'.$cs['image'].'">
+                    <div class="detail">
+                    <h3>'.$cs['title'].'</h3>
+                    <p>ครูประจำชั้น '.$teacher_name.'</p>
+                    <p>จำนวนนักเรียน '.$class_register_check1.' คน<p>
+                 </div>';
+             if($client['role']>=5)
+			 {
+				echo '<div class="listbt">
+								<button class="button btGray" onClick="lightbox('.$cs['clsid'].',\'ClassStd\')"><i class="fa fa-users"></i> นักเรียน</button>
+									<button class="button btGray" onClick="lightbox('.$cs['clsid'].',\'classman\')"><i class="fa fa-cube"></i> แก้ไข</button>
+									<button class="button btGray" onClick="lightbox('.$cs['clsid'].',\'ShareToClass\')"><i class="fa fa-comments"></i> โพสต์</button>
+                            </div>';
+            }
+            echo '</div>';
         }
         //Standard
         echo '<h2>ห้องเรียนมาตรฐาน</h2>';
-        $sql = mysql_query("SELECT * FROM ".conf('table_prefix')."_classroom WHERE `sid`=".$Uinfo['org']." and class_type='standard' ORDER BY clsid ASC");
-        while($css = mysql_fetch_array($sql))
-        {
-            if($css['image']=='')
-                    $class_member_check = mysql_fetch_array(mysql_query("select count(*) from tc_class_register where `status`=1 and `role`=1 and `class_id`= ".$css['clsid']));
-                    $class_teacher = json_decode($css['teacher']);
-                    foreach($class_teacher as $teacher)
-                    {
-                    	$t1 = UserDescript('fullname', $teacher);
-                    	@$teacher_name .= str_replace('|', ' ', $t1['fullname']);
-                    }
-                    $css['image'] = ($css['image']=='') ? 'holder.js/100x80/vine/text:'.csname($css['grade']).'%2F'.$css['cls_number'] : image_resize($css['image'],100,80);
-  
-            echo '
-                        <div class="list-items">
-                            <img src="'.$css['image'].'">
 
-                            <div class="detail">
-                            <h3>'.$css['title'].'</h3>
-                             <p>จำนวนนักเรียน '.$class_member_check['count(*)'].' คน<p>
-                            </div>';
-                         if($client['role']>=6):
-                         echo '
-                            <div class="listbt">
-                                <button class="button btGray"><i class="fa fa-users"></i> นักเรียน</button>
-                                <button class="button btGray"><i class="fa fa-pencil"></i> แก้ไข</button>
-                                <button class="button btGray"><i class="fa fa-trash-o"></i>  ลบ</button>
-                            </div>';
-                         endif;
+        	$sql = mysql_query("SELECT * FROM ".conf('table_prefix')."_classroom WHERE `sid`=".$Uinfo['org']." and class_type='standard' ORDER BY clsid ASC");
+        	while($css = mysql_fetch_array($sql))
+	        {
+	            if($css['image']=='')
+	                    $class_member_check = mysql_fetch_array(mysql_query("select count(*) from tc_class_register where `status`=1 and `role`=1 and `class_id`= ".$css['clsid']));
+	                    $class_teacher = json_decode($css['teacher']);
+	                    $teacherpin = array('');
+	                    $teachertextbt[$css['clsid']] = '<i class="fa fa-check"></i> ตั้งเป็นครูประจำชั้น';
+	                    $index = 'std';
+	                    $teacher_name = '';
+	                    foreach($class_teacher as $teacher)
+	                    {
+	                    	$t1 = UserDescript('fullname', $teacher);
+	                    	$teacher_name .= str_replace('|', ' ', $t1['fullname']).', ';
 
-                   echo '</div>
-                ';
+	                    	if($teacher==$client['ssid']){
+	                    		$teacherpin[$css['clsid']] = '<a href="#" rel="tooltip" original-title="เป็นครูประจำชั้น"><i class="fa fa-certificate text-green pined"></i></a>';
+	                    		$teachertextbt[$css['clsid']] = '<i class="fa fa-times"></i> ยกเลิก';
+	                    		$index = 'pin';
+	                    	}
+	                    }
+	                    if($teacher_name=='') $teacher_name = 'ไม่มี';
+	                    $css['image'] = ($css['image']=='') ? '/holder.png/100x80/'.csname($css['grade']).'·'.$css['cls_number'] : image_resize($css['image'],100,80);
 
-        }
+	            		$classroomlist[$index] .= '
+	                        <div class="list-items">
+	                        	'.$teacherpin[$css['clsid']].'
+	                            <img src="'.$css['image'].'">
+
+	                            <div class="detail">
+	                            <h3>'.$css['title'].'</h3>
+	                             <p>จำนวนนักเรียน '.$class_member_check['count(*)'].' คน<p>
+	                             <p>ครูประจำชั้น '.$teacher_name.'</p>
+	                            </div>';
+	                         if($client['role']>=5&&$index=='pin'):
+								$classroomlist[$index] .=  '<div class="listbt">';
+	                            $classroomlist[$index] .=  '<button class="button btGray" onClick="lightbox('.$css['clsid'].',\'activate_class_teacher\')"> '.$teachertextbt[$css['clsid']].'</button>';
+
+								$classroomlist[$index] .=  '
+									<button class="button btGray" onClick="lightbox('.$css['clsid'].',\'ClassStd\')"><i class="fa fa-users"></i> นักเรียน</button>
+									<button class="button btGray" onClick="lightbox('.$css['clsid'].',\'classman\')"><i class="fa fa-cube"></i> แก้ไข</button>
+									<button class="button btGray" onClick="lightbox('.$css['clsid'].',\'ShareToClass\')"><i class="fa fa-comments"></i> โพสต์</button>';
+	                            $classroomlist[$index] .=  '</div>';
+	                         endif;
+
+							 if($client['role']>=5&&$index=='std'):
+								$classroomlist[$index] .=  '<div class="listbt">';
+	                            $classroomlist[$index] .=  '<button class="button btGray" onClick="lightbox('.$css['clsid'].',\'activate_class_teacher\')"> '.$teachertextbt[$css['clsid']].'</button>';
+	                            $classroomlist[$index] .=  '</div>';
+	                         endif;
+
+
+	                   $classroomlist[$index] .= '</div>
+	                ';
+
+	        }
+	        echo '<br><p class="title">ห้องเรียนที่เป็นครูประจำชั้น</p><br>'.$classroomlist['pin'].'<p class="title">ห้องเรียนที่ไม่ได้ประจำ</p><br>';
+	        echo $classroomlist['std'];
+	        endif;
+
     }
 
+
 	echo '</div>';
+
+
+	        if($client['role']==3):
+	        	$selectMyClass = @mysql_query("select * from tc_classroom where `sid`='".$client['org']."' AND `grade`= ".$client['grade']." AND `cls_number`= ".$client['class']);
+	        	$classinfo = mysql_fetch_array($selectMyClass);
+
+	        		$teacherlist = json_decode($classinfo['teacher'],true);
+
+	        		echo '<div class="topblock" style="background-image: url('.image_resize('/data/default_image/default-img2.jpg','730x160').');">
+		        			<div class="cover"><div class="topblockwall"  style="background-image: url('.image_resize('/data/default_image/default-img2.jpg','730x160').');"></div></div><div class="topheader"><i class="fa fa-cube"></i> '.$classinfo['title'].'</div><div class="topusers">';
+	        		foreach($teacherlist as $teacher):
+	        			$teacherinfo = UserById($teacher);
+	        			$teachername = str_replace('|',' ',$teacherinfo['fullname']);
+
+	        			if($teacherinfo['avatar']=='') $img = '/holder.png/60x60'; else $img = image_resize('/user/'.$teacherinfo['user'].'/'.$teacherinfo['avatar'],60,60);
+		        		echo '
+		        			<div class="userBlock">
+			        			<a href="/profile/'.$teacherinfo['user'].'" rel="tooltip" original-title="ครูประจำชั้น '.$teachername.'" class="thumbnail-mini">
+			        				<img src="'.$img.'" class="img-radius">
+			        			</a>
+			        		</div>
+		        		';
+	        		endforeach;
+	        		echo '<div class="userBlock">
+			        			<a href="#" rel="tooltip" original-title="แสดงสมาชิกทั้งหมดของห้อง '.$classinfo['title'].'" onclick="lightbox('.$classinfo['clsid'].',\'ClassroomStudentList\')" class="thumbnail-mini">
+			        				<i class="fa fa-users fa-3x facircleicon"></i>
+			        			</a>
+			        		</div>
+			        	<div class="userBlock">
+			        			<a href="#" rel="tooltip" original-title="แสดงข้อความของห้อง '.$classinfo['title'].'" onclick="lightbox('.$classinfo['clsid'].',\'ShareToClass\')" class="thumbnail-mini">
+			        				<i class="fa fa-comments fa-3x facircleicon"></i>
+			        			</a>
+			        		</div>
+					<div class="userBlock">
+			        			<a href="#" rel="tooltip" original-title="ดูไฟล์ทั้งหมดที่แชร์ในห้อง '.$classinfo['title'].'" onclick="lightbox(\'\',\'classfiles\')" class="thumbnail-mini">
+			        				<i class="fa fa-file fa-3x facircleicon"></i>
+			        			</a>
+			        		</div>';
+	        		echo '</div></div>';
+
+	                $selectCourseInclass = mysql_query("SELECT * FROM tc_course WHERE class_id = ".$classinfo['clsid']);
+	                echo '<div class="datagrid"><table style="width: 100%;border:none;">';
+	                echo '<caption><h2>แสดงรายวิชา ('.mysql_num_rows($selectCourseInclass).')</h2></caption>';
+	                echo '<thead><tr><th>ชื่อวิชา</th><th>ประเภทวิชา</th><th>กลุ่มสาระ</th><th>ผู้สอน</th><th><i class="fa fa-reorder"></i></th></tr></thead><tbody>';
+	                while($courseIndex = mysql_fetch_array($selectCourseInclass)){
+	                	$courseCat = GroupInfo($courseIndex['main_group']);
+	                	$cteacherlist = json_decode($courseIndex['alternet_teacher_id'],true);
+						$cteacherOut = '';
+		        		foreach($cteacherlist as $cteacher){
+		        			$cteacherinfo = UserById($cteacher);
+		        			$cteacherOut .= str_replace('|',' ',$cteacherinfo['fullname']).',';
+		        		}
+
+	                	echo '<tr>
+	                			<td>'.$courseIndex['cname'].'</td>
+	                			<td>'.ucfirst($courseIndex['type']).'</td>
+	                			<td>'.$courseCat['name'].'</td>
+	                			<td>'.$cteacherOut.'</td>
+	                			<td><button class="button btBlue" onClick="lightbox('.$courseIndex['course_id'].',\'courselb\')"><i class="fa fa-info"></i> เปิดดู</button>
+								<button class="button btGray" onClick="lightbox(\''.$courseIndex['course_id'].'+'.$classinfo['clsid'].'\',\'ShareToCC\')"><i class="fa fa-comments"></i> โพสต์</button>
+								</td>
+	                		  </tr>';
+	            	}
+	            	echo '<tbody></table></div>';
+	        endif;
+
 	echo '</dvi>';
 	echo '</div>';
 }
+
 if($_GET['user']=='group')
 {
 	$strsql = mysql_query("SELECT * FROM `".conf('table_prefix')."_social_group` WHERE `admin`='".$Uinfo['user']."'  ORDER BY `sgid` DESC LIMIT 0,30");
@@ -1076,12 +1279,12 @@ if($_GET['user']=='group')
 	echo '<div class="boxContent" id="idmCL">';
 	echo '<div class="md-list">';
 	while($cs = mysql_fetch_array($strsql)){
-		$cs['logo'] = ($cs['logo']!='') ?  '/image?width=65&height=65&cropratio=1:1&image='.$cs['logo'] : 'holder.js/60x60';
+		$cs['logo'] = ($cs['logo']!='') ?  '/image?width=65&height=65&cropratio=1:1&image='.$cs['logo'] : '/holder.png/60x60';
 		echo '
 					<div class="md-list-items">
 						<!--<a href="/group/'.$cs['url'].'"><img src="'.$cs['logo'].'" class="img-radius"></a>-->
 						<a href="#"><img src="'.$cs['logo'].'" class="img-radius"></a>
-						<span class="green-badge">10</span>
+						<span class="green-badge">0</span>
 						<div class="detail">
 						<a href="#">'.$cs['name'].'</a>
 						</div>
@@ -1097,6 +1300,7 @@ if($_GET['user']=='group')
 	echo '</dvi>';
 	echo '</div>';
 }
+
 if($_GET['user']=='page')
 {
 	if((int)$Uinfo['role']<=6&&$Uinfo['admin']==0) header('location: /my');
@@ -1127,6 +1331,7 @@ if($_GET['user']=='page')
 	echo '</dvi>';
 	echo '</div>';
 }
+
 if($_GET['user']=='conference')
 {
 
@@ -1188,6 +1393,7 @@ if($_GET['user']=='conference')
 			<span class="button" onclick="$(\'#sharedlg\').slideUp(200);"><img src="/library/icon/times.png"> Close</span></p>
 			</div>';
 }
+
 if($_GET['user']=='live')
 {
 	if(getConf('live')!=1) header('location: /404');
@@ -1235,6 +1441,7 @@ if($_GET['user']=='live')
 			<p align="right"><span class="button" onclick="$(\'#sharedlg\').slideUp(200);"><img src="/library/icon/times.png"> Close</span></p>
 			</div>';
 }
+
 if($_GET['user']=='blog')
 {
 	if(getConf('blog')!=1) header('location: /404');
@@ -1289,7 +1496,7 @@ if($_GET['user']=='blog')
 		$g = GroupInfo($qr['group']);
 		$lv = Level($qr['level']);
 
-		echo "<p onmouseover=\"$(this).find('.cc').show()\"  onmouseout=\"$(this).find('.cc').hide()\"><a href='/blog/".$qr['req_id']."' target='_blank'><img src='/image-api.php?width=100&height=100&cropratio=1:1&image=/data/content/".$qr['req_id']."/".$qr['image']."' data-src=\"holder.js/100x100/random\" class='stdo-image'></a><a href='/blog/".$qr['req_id']."' target='_blank'>".$qr['subject']."</a><span class='des'>".$g['name']." - ".$lv['name']." <span style='color: #aaa;font-size:11px;font-weight: normal;'>เมื่อ ".date("d/m/Y, H:i:s", $qr['timestamp'])."</span></span>";
+		echo "<p onmouseover=\"$(this).find('.cc').show()\"  onmouseout=\"$(this).find('.cc').hide()\"><a href='/blog/".$qr['req_id']."' target='_blank'><img src='/image-api.php?width=100&height=100&cropratio=1:1&image=/data/content/".$qr['req_id']."/".$qr['image']."' data-src=\"holder.png/100x100/Thumbnail\" class='stdo-image'></a><a href='/blog/".$qr['req_id']."' target='_blank'>".$qr['subject']."</a><span class='des'>".$g['name']." - ".$lv['name']." <span style='color: #aaa;font-size:11px;font-weight: normal;'>เมื่อ ".date("d/m/Y, H:i:s", $qr['timestamp'])."</span></span>";
 		if($_SESSION['loginid']['nickname']==$_GET['indentity']&&$_GET['user']=='blog'){
 			echo "<br> <span style='float: right; position: absolute; bottom: 5px; right: 10px; display: none;' class='cc'>
 			<a href=\"javascript:void(0);\" onclick=\"$('.urlcontainer').html('".conf('url')."blog/".$qr['req_id']."');
@@ -1314,6 +1521,7 @@ if($_GET['user']=='blog')
 			</p>
 			</div>';
 }
+
 if($_GET['user']=='contents')
 {
 		echo '
@@ -1423,7 +1631,6 @@ if(!isset($_SESSION['loginid'])&&@$_SESSION['loginid']['nickname']=='')
 	echo '</div>'."\n";
 	echo '</div>';
 	echo '</div>'."\n";
-	echo $p->bos('bottom-script.js');
 
 	//display footer
 	$ft_wrapper = '<div class="clear"></div>';

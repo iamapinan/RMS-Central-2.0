@@ -1,4 +1,24 @@
 <!--
+(function($) {
+  $.fn.serializeFiles = function() {
+    var form = $(this),
+        formData = new FormData()
+        formParams = form.serializeArray();
+
+    $.each(form.find('input[type="file"]'), function(i, tag) {
+      $.each($(tag)[0].files, function(i, file) {
+        formData.append(tag.name, file);
+      });
+    });
+
+    $.each(formParams, function(i, val) {
+      formData.append(val.name, val.value);
+    });
+
+    return formData;
+  };
+})(jQuery);
+
 function poponload(url) {
     windows = window.open(url, "booking", "location=0,status=0,scrollbars=0,width=920,height=580,resizable=no");
     if (!windows) {
@@ -44,7 +64,7 @@ function checkPwd(str) {
 
 function chkpin(strp) {
     var pv = $("#" + strp).val();
-
+    return true;
     if (checkPwd(pv) == "ok") {
         $("#" + strp).css('border', '1px solid #11BB47');
         return true;
@@ -148,6 +168,21 @@ function cmdel(id) {
     }); //End Ajax
 }
 
+function stdSetupSave() {
+    var set_url = '/save.php?q=stdSetup';
+    $.ajax({
+        'url': set_url,
+        'type': 'POST',
+        'dataType': 'HTML',
+        'data': $('#stdSetupFrm').serialize(),
+        'success': function(data) {
+            if(data==1)
+                $('#stdSetupFrm').html("<h3>บันทึกการตั้งค่าเรียบร้อยแล้ว</h3>");
+        } //End Success
+    }); //End Ajax
+    return false;
+}
+
 function liked(like_bid) {
     $.ajax({
         'url': '/save.php?q=like&set=' + like_bid,
@@ -168,7 +203,7 @@ function acupasschange(newpass)
         var passcontainer = $('#passview');
         if(!newpass)
             newpass = passcontainer.data('pass');
-        
+
         passcontainer.html('<input type="text" id="acupassword" value="'+newpass+'">');
         acupasstools.html('<a href="#" id="acupassconfirm" title="Save this password."><i class="fa fa-check" style="color: green"></i></a>');
         acupasssave(passtoolbox,passcontainer)
@@ -196,29 +231,99 @@ function SaveBody() {
     });
 }
 
+function getData(get, q, ds){
+    $.post('/get.php?t='+q+'&get=' + get, function(res) {
+        $('.lightbox').find(ds).html('');
+        $('.lightbox').find(ds).html(res.body);
+    });
+}
 
+function addPostFile(){
+	 $('.lightbox').find('#postfile').click();
+}
 
-function lightbox(data){
+function lightbox(data,t){
     var lbexists = $('.lightbox').html();
+    $('.lightbox-title').html('');
+    $('.lbbody').html('');
+	$('.filter').show();
+    $.post('/get.php?t='+t+'&get=' + data, function(res) {
 
-    $.post('/get.php?t=courselb&get=' + data, function(res) {
-            if(lbexists==undefined){
+            $('.lightbox-title').html(res.title);
+            $('.lbbody').html(res.body);
 
-                $('body').append('<div class="lightbox"><div class="lb-times"><i class="fa fa-times"></i></div><div class="lbbody">'+res.body+'</div></div>');
-            }
-            else
-            {
-                $('.lightbox-title').html(res.title);
-                $('.lbbody').html(res.body);
-            }
             showlimit();
-           $('.lightbox').show();
+           $('.lightbox').fadeIn(100);
+           $('.lb-times').fadeIn(100);
            $('.lb-times').click(function(){
                 $('.lightbox').hide();
+				$('.filter').hide();
+                $(this).hide()
             })
     });
 
-    
+	window.scrollTo(0,0);
+
+}
+
+function select_user(name, uid){
+    $('body').find('.member-list').append('<span class="member_selected" id="member-id-'+uid+'">\
+    <input type="hidden" name="member_group[]" value="'+uid+'">\
+	<i class="fa fa-male fa-2x inlinepos text-green"></i> '+name+' \
+    <a href="javascript:void(0);" onclick="$(\'#member-id-'+uid+'\').remove();">\
+    <i class="fa fa-times"></i></a></span>');
+    $('.uls').hide();
+    $('#idCheck').val('').focus();
+}
+
+function stds(fid){
+    var dataset = $(document).find(fid).serialize();
+    $.post('/save.php?q=stds', dataset, function(res) {
+        if(res==1){
+            $('.success-check').addClass('fa-check-circle-o');
+            $('.success-check').removeClass('fa-times');
+            $('.success-check').show();
+        }
+        else{
+            $('.success-check').removeClass('fa-check-circle-o');
+            $('.success-check').addClass('fa-times');
+            $('.success-check').show();
+        }
+    });
+}
+
+function ccs(fid,courseid){
+    var dataset = $(document).find(fid).serialize();
+    $.post('/save.php?q=ccs', dataset, function(res) {
+        lightbox(courseid,'CourseStd');
+    });
+
+}
+
+
+function unregisterccr(classid,courseid){
+  $.post('/save.php?q=uncc', {"class":classid, "course":courseid}, function(res) {
+        lightbox(courseid,'CourseStd');
+    });
+}
+
+function addPoint(repid){
+  $.post('/save.php?q=pointToreply', {"id":repid}, function(res) {
+        $('body').find('.point-'+repid).html('มี 1 คะแนน');
+    });
+}
+
+function delreply(repid){
+  $.post('/save.php?q=remove_reply', {"id":repid}, function(res) {
+        $('body').find('#rep-'+repid).remove();
+    });
+}
+
+function form_to_json (selector) {
+  var ary = $(selector).serializeArray();
+  var obj = {};
+  for (var a = 0; a < ary.length; a++) obj[ary[a].name] = ary[a].value;
+  return obj;
 }
 
 function showlimit(){
@@ -256,8 +361,155 @@ function SaveUpdate(post_id) {
     });
 }
 
+  //menus
+    $(".user-name").click(function (event) {
+      event.stopPropagation();
+      $("#umenu").toggle();
+       var zIndexNumber = 1000;
+       $("#umenu").css("zIndex", zIndexNumber);
+    });
+    $('#shb, .user-text').click(function (event){
+        event.stopPropagation();
+    });
+    $("body").click(function() {
+         $("#umenu").hide();
+         $('.msg-alert-popup').hide();
+         //$('#shb').css('width','60px');
+         //$("#slides").fadeIn('fast');
+    });
 
+
+function fnc_org_add()
+{
+    var orgn = $('#schoolsh').val();
+    var call_url = '/profilesave.php?action=newp';
+        $.post(call_url, $("#newprofile").serialize(true),function(r){
+            if(r.res==1)
+                window.location='/create?do=neworg&org='+orgn;
+        }, 'json');
+}
+
+function create_new_org()
+{
+    var orgn = $('#schoolsh').val();
+    var call_url = '/save.php?action=neworg';
+        $.post(call_url, $("#neworg").serialize(true),function(r){
+            if(r.res==1)
+                window.location=r.redirect;
+            else
+            {
+                $('#alert_status').show();
+                $('#alert_status .text').html('ท่านต้องกรอกข้อมูลให้ครบถ้วนก่อนดำเนินการต่อ');
+            }
+        }, 'json');
+}
+
+$('#verify_save').click(function(){
+    var ogid = $('#schoolid').val();
+    var roid = $('#roleid').val();
+    var schn = $('#schoolsh').val();
+    if((ogid==''||schn=='')||roid=='')
+    {
+        if(ogid==''&&schn!='')
+            fnc_org_add();
+
+        $('#alert_status').show();
+        $('#alert_status .text').html('กรุณาเติมข้อมูลในช่องว่างก่อนดำเนินการต่อ');
+        return false;
+    }
+    else
+    {
+        var call_url = '/profilesave.php?action=newp';
+        $.post(call_url, $("#newprofile").serialize(true),function(r){
+            window.location='/verify';
+        }, 'json');
+        return false;
+    }
+});
+
+$('#regis_save').click(function(){
+    var ogid = $('#schoolid').val();
+    var roid = $('#role').find(':selected').val();
+    var schn = $('#schoolsh').val();
+    var pass = $('#password').val();
+
+    if((ogid==''||schn=='')||roid==''||pass=='')
+    {
+        if(ogid==''&&schn!='')
+            fnc_org_add();
+
+        $('#alert_status').show();
+        $('#alert_status .text').html('กรุณาตรวจสอบข้อมูลให้ถูกต้องก่อนดำเนินการต่อ');
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+});
+
+$('#schoolsh').keypress(function(e) {
+        $('#shoolshpre').show();
+        //alert($(this).val());
+        var this_keyword = $(this).val();
+        $('#shoolshpre').show();
+        $.post("/search.php?act=schoolsh", { q: this_keyword}).done(function (data)
+                {
+                    $('.scview').html(data);
+                });
+});
+
+function delete_post(postid)
+{
+	if(confirm("ต้องการลบเนื้อหานี้ใช่หรือไม่?...")==false) return false;
+    $.ajax({
+        'url': '/save.php?q=delete&id='+postid,
+        'type': 'GET',
+        'dataType': 'JSON',
+        'success': function (data)
+            {
+            if(data.result=='success')
+                {
+                    $('.post-'+postid).fadeOut(100, function(){ $(this).remove();});
+                    $('.c'+postid).fadeOut(100, function(){ $(this).remove(); });
+                }
+            }
+    });
+}
+function addreplyfile (id){
+	$('#repf-'+id).click();
+}
+function replybtn(id){
+	$('.rep-'+id).show();
+}
 $(document).ready(function() {
+
+
+        $('body').append('<div class="lightbox"><div class="lb-times">Close <i class="fa fa-times"></i></div><div class="lbbody"></div></div><div class="filter"></div>');
+
+        $('#MainSearch').click(function(ev){
+            ev.stopPropagation();
+            if($(this).val()!='')
+                $('.search_content_preview').show(function(){ $(this).effect();});
+        });
+        $('#schoolsh').click(function()
+        {
+            $('#schoolsh').show();
+        });
+        $('#mySearch').click(function(ev){
+            ev.stopPropagation();
+        if($(this).val()!='')
+            $('.mysearch_content_preview').show(function(){ $(this).effect();});
+        });
+
+        $("#roleid").change( function() {
+            switch_role($(this).val());
+        });
+
+        $('.status_close').click(function(){
+            $('#alert_status').slideUp(300);
+        });
+
 
     $("a[href$='\#']").click(function() {
         return false;
@@ -268,7 +520,7 @@ $(document).ready(function() {
        $('#passview').html($('#passview').data('pass'));
        return false;
     })
-    
+
     //Add  wmode="Opaque"
     $('#shb').keyup(function(e) {
         if (e.keyCode == 13) {

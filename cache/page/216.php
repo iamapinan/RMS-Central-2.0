@@ -54,7 +54,7 @@ foreach($sc as $k)
 		if((int)$k['contents']!=0) $icon = '<span class="lic">'.$k['contents'].'</span>'; else $icon = '';
 		if(count($k['child'])!=0) $mbt = '<span class="morebt">+</span>'; else $mbt = '<span class="morebt">-</span>';
 		echo '<li class="news-items main-a list-'.$k['scid'].'" onclick="getData('.$k['scid'].');$(\'.c-'.$k['scid'].'\').slideToggle();$(\'.news-items\').css(\'list-style\',\'none\');">'.$mbt.$k['name'].$icon.'</li>';
-		echo '<span class="content-list-'.$k['scid'].'"></span>';
+		//echo '<span class="content-list-'.$k['scid'].'"></span>';
 		foreach($k['child'] as $x){
 			echo '<li class="news-items c-'.$k['scid'].' main-b list-'.$x['scid'].'"  onclick="getData('.$x['scid'].')">'.$x['name'].'</li>';
 			echo '<span class="content-list-'.$x['scid'].'"></span>';
