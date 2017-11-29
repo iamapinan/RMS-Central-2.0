@@ -9,9 +9,9 @@ date_default_timezone_set($timezone);
 
 //Database config.
 $conf['host']="localhost";
-$conf['dbuser']="root";
-$conf['dbpass']="v4boyomN";
-$conf['dbname']="rms_auth_db";
+$conf['dbuser']="";
+$conf['dbpass']="";
+$conf['dbname']="";
 $conf['table_prefix']='tc';
 
 $conf['port'] = $_SERVER["SERVER_PORT"];
@@ -21,16 +21,16 @@ if($conf['port']==443)
 $conf['protocol'] = 'https://';
 
 //Web settings
-$conf['pagename'] = "Boundless Learning";
+$conf['pagename'] = "";
 $conf['domain']= $_SERVER['HTTP_HOST'];
 
 $conf['profile_img_size'] = 1024000;
-$conf['auth_key'] = 'JEKV6rPS9fU2xgvPzR9N5HPAZ2gos5w86a0aegeINIgy';
-$conf['system_email'] = 'admin@bll.in.th';
+$conf['auth_key'] = '';
+$conf['system_email'] = '';
 
 //$plain_text="12345678";
-$conf['amkey'] ="+e9SdYd6Uj750+LrKvlP6mdh";
-$conf['amvi']  = "SMx0Su06";
+$conf['amkey'] ="";
+$conf['amvi']  = "";
 
 //System path settings
 $conf['dir'] = $_SERVER['DOCUMENT_ROOT'].'/'; //linux file path
@@ -45,11 +45,11 @@ $conf['user'] = $conf['url'].'user/';
 $conf['version'] = $version['number'];
 $conf['idm_apiversion'] =  $version['api'];
 $conf['root'] = $_SERVER['DOCUMENT_ROOT'];
-$conf['idm_server'] = 'http://acumanager.bll.in.th/';
-$conf['idm-server'] = '106.0.176.33';
-$conf['api_server'] = 'http://rms.bll.in.th:8000/';
-$conf['orgid'] = '1000000001';
-$conf['orgname'] = 'โรงเรียนไร้พรมแดน';
+$conf['idm_server'] = '';
+$conf['idm-server'] = '';
+$conf['api_server'] = '';
+$conf['orgid'] = '';
+$conf['orgname'] = '';
 $conf['inclassURL'] = $conf['url']."clicker";
 $conf['inclassRES']  = $conf['url']."clicker/get/";
 ?>
